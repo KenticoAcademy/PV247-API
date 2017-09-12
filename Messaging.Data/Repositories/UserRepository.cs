@@ -24,6 +24,8 @@ namespace Messaging.Data.Repositories
         {
             var result = await _table.ExecuteAsync(TableOperation.Retrieve<UserEntity>(email, "User"));
             var user = (UserEntity)result.Result;
+            if (user == null)
+                return null;
 
             return new User
             {
