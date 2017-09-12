@@ -8,7 +8,10 @@ namespace Messaging.Data
     {
         public static IServiceCollection AddDataServices(this IServiceCollection services)
         {
-            return services.AddScoped<IUserRepository, UserRepository>();
+            return services
+                .AddSingleton<TableClientFactory>()
+                .AddScoped<IUserRepository, UserRepository>()
+                .AddScoped<IAppSpaceRepository, AppSpaceRepository>();
         }
     }
 }

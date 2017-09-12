@@ -3,8 +3,6 @@ using System.Threading.Tasks;
 using Messaging.Contract.Models;
 using Messaging.Contract.Repositories;
 using Messaging.Data.Models;
-using Microsoft.Extensions.Options;
-using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Messaging.Data.Repositories
@@ -16,12 +14,10 @@ namespace Messaging.Data.Repositories
 
         private readonly CloudTable _table;
 
-        public UserRepository(IOptions<Settings> settings)
+        public UserRepository(TableClientFactory clientFactory)
         {
-            var storageAccount = CloudStorageAccount.Parse(settings.Value.StorageConnectionString);
-            var tableClient = storageAccount.CreateCloudTableClient();
-
-            _table = tableClient.GetTableReference("DataTable");
+            _table = clientFactory.GetTableClient()
+                .GetTableReference("DataTable");
         }
 
         public async Task<User> Get(Guid appId, string email)

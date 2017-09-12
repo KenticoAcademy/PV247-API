@@ -35,21 +35,17 @@ namespace Messaging.Api.Controllers
         {
             var user = await _userRepository.Get(appId, email);
             if (user == null)
-            {
                 return NotFound();
-            }
 
             // TODO: Map to a viewmodel
             return Ok(user);
         }
 
-        [HttpPost("{email}")]
+        [HttpPut("{email}")]
         public async Task<IActionResult> Upsert(Guid appId, string email, [FromBody]string customData)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             var user = new User
             {
