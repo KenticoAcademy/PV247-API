@@ -24,7 +24,6 @@ namespace Messaging.Api
             services.AddMvc();
             services.Configure<Settings>(Configuration);
             services.AddDataServices();
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

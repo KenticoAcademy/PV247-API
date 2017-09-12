@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.10
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messaging.Api", "Messaging.Api\Messaging.Api.csproj", "{03F15891-D179-4837-B2EB-F889D1CA6A20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messaging.Data", "Messaging.Data\Messaging.Data.csproj", "{07C25924-157E-4819-A74C-4EBAC42E8D04}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messaging.Data", "Messaging.Data\Messaging.Data.csproj", "{07C25924-157E-4819-A74C-4EBAC42E8D04}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messaging.Contract", "Messaging.Contract\Messaging.Contract.csproj", "{96CB0565-0D98-4251-8F30-836374033B06}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messaging.Contract", "Messaging.Contract\Messaging.Contract.csproj", "{96CB0565-0D98-4251-8F30-836374033B06}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messaging.Api.Tests", "Messaging.Api.Tests\Messaging.Api.Tests.csproj", "{96C08EF5-2071-4D37-B9BF-05BEF6586CF3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{96CB0565-0D98-4251-8F30-836374033B06}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96CB0565-0D98-4251-8F30-836374033B06}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96CB0565-0D98-4251-8F30-836374033B06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96C08EF5-2071-4D37-B9BF-05BEF6586CF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96C08EF5-2071-4D37-B9BF-05BEF6586CF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96C08EF5-2071-4D37-B9BF-05BEF6586CF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96C08EF5-2071-4D37-B9BF-05BEF6586CF3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

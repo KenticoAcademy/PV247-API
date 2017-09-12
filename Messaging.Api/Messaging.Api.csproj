@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Messaging.Contract\Messaging.Contract.csproj" />
     <ProjectReference Include="..\Messaging.Data\Messaging.Data.csproj" />
   </ItemGroup>
 
