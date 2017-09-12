@@ -1,12 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Messaging.Contract.Models;
 
 namespace Messaging.Contract.Repositories
 {
     public interface IUserRepository
     {
-        Task<User> Get(string email);
+        Task<User> Get(Guid appId, string email);
 
-        Task<User> Upsert(User user);
+        Task<User> Upsert(Guid appId, User user);
     }
 }

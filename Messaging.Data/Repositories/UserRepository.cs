@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Messaging.Contract.Models;
 using Messaging.Contract.Repositories;
 using Messaging.Data.Models;
@@ -10,6 +11,9 @@ namespace Messaging.Data.Repositories
 {
     internal class UserRepository : IUserRepository
     {
+        private const string GlobalPartitionKey = "Global";
+        private const string UserRowKeyPrefix = "U;";
+
         private readonly CloudTable _table;
 
         public UserRepository(IOptions<Settings> settings)
@@ -20,36 +24,67 @@ namespace Messaging.Data.Repositories
             _table = tableClient.GetTableReference("DataTable");
         }
 
-        public async Task<User> Get(string email)
+        public async Task<User> Get(Guid appId, string email)
         {
-            var result = await _table.ExecuteAsync(TableOperation.Retrieve<UserEntity>(email, "User"));
-            var user = (UserEntity)result.Result;
+            var user = await GetUser(email);
             if (user == null)
+                return null;
+
+            var userMetadata = await GetUserMetadata(appId, user.RowKey);
+            if (userMetadata == null)
                 return null;
 
             return new User
             {
-                Id = user.Id,
-                Email = user.Email
+                Email = user.PartitionKey,
+                CustomData = userMetadata.CustomData
             };
         }
 
-        public async Task<User> Upsert(User user)
+        private async Task<UserEntity> GetUser(string email)
         {
-            var entity = new UserEntity
+            var userResult = await _table.ExecuteAsync(TableOperation.Retrieve<UserEntity>(GlobalPartitionKey, GetUserRowKey(email)));
+            return (UserEntity)userResult.Result;
+        }
+
+        private async Task<UserMetadataEntity> GetUserMetadata(Guid appId, string rowKey)
+        {
+            var userMetadataResult = await _table.ExecuteAsync(TableOperation.Retrieve<UserMetadataEntity>(appId.ToString(), rowKey));
+            return (UserMetadataEntity)userMetadataResult.Result;
+        }
+
+        private string GetUserRowKey(string email)
+        {
+            return UserRowKeyPrefix + email;
+        }
+
+        public async Task<User> Upsert(Guid appId, User user)
+        {
+            var userEntity = await GetUser(user.Email);
+            if (userEntity == null)
             {
-                Id = user.Id,
-                Email = user.Email
+                userEntity = new UserEntity
+                {
+                    PartitionKey = GlobalPartitionKey,
+                    RowKey = GetUserRowKey(user.Email),
+                };
+                var userResult = await _table.ExecuteAsync(TableOperation.InsertOrReplace(userEntity));
+                userEntity = (UserEntity)userResult.Result;
+            }
+
+            var userMetadataEntity = new UserMetadataEntity
+            {
+                PartitionKey = appId.ToString(),
+                RowKey = userEntity.RowKey,
+                CustomData = user.CustomData
             };
-
-            var result = await _table.ExecuteAsync(TableOperation.InsertOrReplace(entity));
-
-            var insertedUser = (UserEntity)result.Result;
+            var result = await _table.ExecuteAsync(TableOperation.InsertOrReplace(userMetadataEntity));
+            userMetadataEntity = (UserMetadataEntity)result.Result;
 
             return new User
             {
-                Id = insertedUser.Id,
-                Email = insertedUser.Email
+                Email = userEntity.RowKey.Substring(UserRowKeyPrefix.Length),
+                CustomData = userMetadataEntity.CustomData
             };
         }
     }
