@@ -2,7 +2,7 @@
 
 namespace Messaging.Data.Models
 {
-    internal class AppSpaceEntity: TableEntity
+    internal class ApplicationEntity: TableEntity
     {
         public string ChannelsJson { get; set; }
     }

@@ -4,10 +4,10 @@ using Messaging.Contract.Models;
 
 namespace Messaging.Contract.Repositories
 {
-    public interface IAppSpaceRepository
+    public interface IApplicationRepository
     {
-        Task<AppSpace> Get(Guid appId);
+        Task<Application> Get(Guid appId);
 
-        Task<AppSpace> Upsert(AppSpace app);
+        Task<Application> Upsert(Application app);
     }
 }

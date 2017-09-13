@@ -11,7 +11,7 @@ namespace Messaging.Data
             return services
                 .AddSingleton<TableClientFactory>()
                 .AddScoped<IUserRepository, UserRepository>()
-                .AddScoped<IAppSpaceRepository, AppSpaceRepository>();
+                .AddScoped<IApplicationRepository, ApplicationRepository>();
         }
     }
 }

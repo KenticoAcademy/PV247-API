@@ -25,7 +25,7 @@ namespace Messaging.Api.Controllers
         /// <summary>
         /// Retrieves metadata for user with given <paramref name="email"/>.
         /// </summary>
-        /// <param name="appId">Application space ID</param>
+        /// <param name="appId">Application ID</param>
         /// <param name="email">User's email address</param>
         /// <response code="200">Returns the retrieved user metadata.</response>
         /// <response code="400">If user with given <paramref name="email"/> doesn't exist.</response>

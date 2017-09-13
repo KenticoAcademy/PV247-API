@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Messaging.Contract.Models
 {
-    public class AppSpace
+    public class Application
     {
         public Guid Id { get; set; }
 
