@@ -16,31 +16,35 @@ namespace Messaging.Data.Services
             _messageRepository = messageRepository;
         }
 
-        public async Task<IEnumerable<Message>> GetAll(Guid appId, Guid channelId, int lastN)
+        public async Task<IEnumerable<Message>> GetAll(string currentUser, Guid appId, Guid channelId, int lastN)
         {
+            // TODO: Check the user is invited to the application?
+
             return await _messageRepository.GetAll(appId, channelId, lastN);
         }
 
-        public async Task<Message> Create(Guid appId, Guid channelId, Message message)
+        public async Task<Message> Create(string currentUser, Guid appId, Guid channelId, Message message)
         {
             message.Id = Guid.NewGuid();
             message.CreatedAt = DateTime.UtcNow;
-            // message.CreatedBy = "TODO";
+            message.CreatedBy = currentUser;
 
             return await _messageRepository.Upsert(appId, channelId, message);
         }
 
-        public async Task<Message> Edit(Guid appId, Guid channelId, Message message)
+        public async Task<Message> Edit(string currentUser, Guid appId, Guid channelId, Message message)
         {
             message.UpdatedAt = DateTime.UtcNow;
-            // message.UpdatedBy = "TODO";
+            message.UpdatedBy = currentUser;
 
             return await _messageRepository.Upsert(appId, channelId, message);
         }
 
-        public async Task<bool> Delete(Guid appId, Guid channelId, Guid messageId)
+        public async Task<bool> Delete(string currentUser, Guid appId, Guid channelId, Guid messageId)
         {
-           return await _messageRepository.Delete(appId, channelId, messageId);
+            // TODO: Check the author is deleting his own message
+
+            return await _messageRepository.Delete(appId, channelId, messageId);
         }
     }
 }

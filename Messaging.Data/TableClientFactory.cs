@@ -9,7 +9,7 @@ namespace Messaging.Data
     {
         private readonly CloudTableClient _tableClient;
 
-        public TableClientFactory(IOptions<Settings> settings)
+        public TableClientFactory(IOptions<StorageSettings> settings)
         {
             var storageAccount = CloudStorageAccount.Parse(settings.Value.StorageConnectionString);
             _tableClient = storageAccount.CreateCloudTableClient();

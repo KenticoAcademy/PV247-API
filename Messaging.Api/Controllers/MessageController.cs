@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Messaging.Contract.Models;
 using Messaging.Contract.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Messaging.Api.Controllers
 {
+    [Authorize]
     [Route("api/app/{appId}/channel/{channelId}/message")]
     public class MessageController : Controller
     {
@@ -19,7 +22,7 @@ namespace Messaging.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(Guid appId, Guid channelId, [FromQuery] int lastN)
         {
-            var messages = await _messageService.GetAll(appId, channelId, lastN);
+            var messages = await _messageService.GetAll(HttpContext.GetCurrentUserId(), appId, channelId, lastN);
             if (messages == null)
                 return NotFound("Channel not found");
 
@@ -32,7 +35,7 @@ namespace Messaging.Api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var created = await _messageService.Create(appId, channelId, message);
+            var created = await _messageService.Create(HttpContext.GetCurrentUserId(), appId, channelId, message);
             if (created == null)
                 return NotFound("Channel not found");
 
@@ -47,7 +50,7 @@ namespace Messaging.Api.Controllers
 
             message.Id = messageId;
 
-            var updated = await _messageService.Edit(appId, channelId, message);
+            var updated = await _messageService.Edit(HttpContext.GetCurrentUserId(), appId, channelId, message);
             if (updated == null)
                 return NotFound("Channel or message not found");
 
@@ -57,7 +60,7 @@ namespace Messaging.Api.Controllers
         [HttpDelete("{messageId}")]
         public async Task<IActionResult> Delete(Guid appId, Guid channelId, Guid messageId)
         {
-            var wasDeleted = await _messageService.Delete(appId, channelId, messageId);
+            var wasDeleted = await _messageService.Delete(HttpContext.GetCurrentUserId(), appId, channelId, messageId);
             if (!wasDeleted)
                 return NotFound("Channel or message not found");
 

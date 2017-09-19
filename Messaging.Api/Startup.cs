@@ -1,12 +1,16 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Text;
 using Messaging.Contract.Models;
 using Messaging.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
+using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace Messaging.Api
@@ -34,7 +38,28 @@ namespace Messaging.Api
         {
             // Add framework services.
             services.AddMvc();
-            services.Configure<Settings>(Configuration);
+            services.Configure<StorageSettings>(Configuration);
+
+            var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration.GetValue<string>("TokenSigningKey")));
+
+            services.Configure<AuthSettings>(settings =>
+            {
+                settings.TokenSigningKey = signingKey;
+            });
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = signingKey,
+                        ValidateAudience = false,
+                        ValidateIssuer = false,
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero,
+                    };
+                });
             services.AddDataServices();
 
             // Register the Swagger generator
@@ -48,6 +73,13 @@ namespace Messaging.Api
                 });
 
                 options.IncludeXmlComments(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "Messaging.Api.xml"));
+                options.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                {
+                    In = "header",
+                    Name = "Authorization",
+                    Type = "apiKey",
+                    Description = "Please insert JWT with Bearer into field"
+                });
             });
         }
 
@@ -64,6 +96,7 @@ namespace Messaging.Api
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            app.UseAuthentication();
             app.UseMvc();
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.

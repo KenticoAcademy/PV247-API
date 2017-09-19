@@ -20,6 +20,12 @@ namespace Messaging.Data.Repositories
                 .GetTableReference("DataTable");
         }
 
+        public async Task<bool> IsValidUser(string email)
+        {
+            var user = await GetUser(email);
+            return user != null;
+        }
+
         public async Task<User> Get(Guid appId, string email)
         {
             var user = await GetUser(email);

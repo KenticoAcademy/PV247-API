@@ -1,6 +1,6 @@
 ﻿namespace Messaging.Contract.Models
 {
-    public class Settings
+    public class StorageSettings
     {
         public string StorageConnectionString { get; set; }
     }
