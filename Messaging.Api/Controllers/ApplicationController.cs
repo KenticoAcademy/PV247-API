@@ -30,7 +30,7 @@ namespace Messaging.Api.Controllers
         /// </summary>
         /// <param name="appId">Application ID</param>
         /// <response code="200">Returns the retrieved application.</response>
-        /// <response code="400">If application with given <paramref name="appId"/> doesn't exist.</response>
+        /// <response code="404">If application with given <paramref name="appId"/> doesn't exist.</response>
         [HttpGet("{appId}")]
         [ProducesResponseType(typeof(Application), 200)]
         public async Task<IActionResult> Get(Guid appId)
@@ -66,8 +66,8 @@ namespace Messaging.Api.Controllers
         /// <param name="appId">Application ID</param>
         /// <param name="patch">Description of application update</param>
         /// <response code="200">Everything went well.</response>
-        /// <response code="400">Application specified by given <paramref name="appId"/> does not exist.</response>
-        /// <response code="404">Provided patch is malformed.</response>
+        /// <response code="404">Application specified by given <paramref name="appId"/> does not exist.</response>
+        /// <response code="400">Provided patch is malformed.</response>
         [HttpPatch("{appId}")]
         [ProducesResponseType(typeof(Application), 200)]
         public async Task<IActionResult> Patch(Guid appId, [FromBody]JsonPatchDocument<Application> patch)

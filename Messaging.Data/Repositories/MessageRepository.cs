@@ -52,6 +52,19 @@ namespace Messaging.Data.Repositories
             return query.Where(filterString);
         }
 
+        private async Task<MessageEntity> GetEntity(Guid appId, Guid channelId, Guid messageId)
+        {
+            var existingResult = await _table.ExecuteAsync(TableOperation.Retrieve<MessageEntity>(appId.ToString(), GetRowKey(channelId, messageId)));
+            return (MessageEntity)existingResult.Result;
+        }
+
+        public async Task<Message> Get(Guid appId, Guid channelId, Guid messageId)
+        {
+            var message = await GetEntity(appId, channelId, messageId);
+
+            return message == null ? null : ToDto(message);
+        }
+
         public async Task<IEnumerable<Message>> GetAll(Guid appId, Guid channelId, int lastN)
         {
             var query = GetWithinPartitionStartsWithByRowKeyQuery<MessageEntity>(appId.ToString(), RowKeyPrefix + channelId);
@@ -91,8 +104,7 @@ namespace Messaging.Data.Repositories
 
         public async Task<bool> Delete(Guid appId, Guid channelId, Guid messageId)
         {
-            var existingResult = await _table.ExecuteAsync(TableOperation.Retrieve<MessageEntity>(appId.ToString(), GetRowKey(channelId, messageId)));
-            var existing = (MessageEntity) existingResult.Result;
+            var existing = await GetEntity(appId, channelId, messageId);
             if (existing == null)
                 return false;
 
@@ -103,18 +115,15 @@ namespace Messaging.Data.Repositories
 
         private static string GetRowKey(Guid channelId, Guid messageId) => $"{RowKeyPrefix}{channelId};{messageId}";
 
-        private static Message ToDto(MessageEntity entity)
+        private static Message ToDto(MessageEntity entity) => new Message
         {
-            return new Message
-            {
-                Id = Guid.Parse(entity.RowKey.Split(';').Last()),
-                Value = entity.Value,
-                CreatedAt = entity.CreatedAt,
-                CreatedBy = entity.CreatedBy,
-                UpdatedAt = entity.UpdatedAt,
-                UpdatedBy = entity.UpdatedBy,
-                CustomData = entity.CustomData
-            };
-        }
+            Id = Guid.Parse(entity.RowKey.Split(';').Last()),
+            Value = entity.Value,
+            CreatedAt = entity.CreatedAt,
+            CreatedBy = entity.CreatedBy,
+            UpdatedAt = entity.UpdatedAt,
+            UpdatedBy = entity.UpdatedBy,
+            CustomData = entity.CustomData
+        };
     }
 }

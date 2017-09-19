@@ -16,6 +16,11 @@ namespace Messaging.Data.Services
             _messageRepository = messageRepository;
         }
 
+        public async Task<Message> Get(string currentUser, Guid appId, Guid channelId, Guid messageId)
+        {
+            return await _messageRepository.Get(appId, channelId, messageId);
+        }
+
         public async Task<IEnumerable<Message>> GetAll(string currentUser, Guid appId, Guid channelId, int lastN)
         {
             // TODO: Check the user is invited to the application?

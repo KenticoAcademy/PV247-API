@@ -7,6 +7,8 @@ namespace Messaging.Contract.Services
 {
     public interface IMessageService
     {
+        Task<Message> Get(string currentUser, Guid appId, Guid channelId, Guid messageId);
+
         Task<IEnumerable<Message>> GetAll(string currentUser, Guid appId, Guid channelId, int lastN);
 
         Task<Message> Create(string currentUser, Guid appId, Guid channelId, Message message);
