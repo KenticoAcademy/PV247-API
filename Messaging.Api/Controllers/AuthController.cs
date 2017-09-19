@@ -9,19 +9,32 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Messaging.Api.Controllers
 {
+    /// <summary>
+    /// Authentication API
+    /// </summary>
     [Route("api/[controller]")]
     public class AuthController : Controller
     {
         private readonly IUserRepository _userRepository;
         private readonly AuthSettings _authSettings;
 
+        /// <summary>
+        /// Constructor for the dependency injection
+        /// </summary>
         public AuthController(IUserRepository userRepository, IOptions<AuthSettings> settings)
         {
             _userRepository = userRepository;
             _authSettings = settings.Value;
         }
 
+        /// <summary>
+        /// Returns token that can be used to authenticate API calls.
+        /// </summary>
+        /// <param name="email">Email identifying a user.</param>
+        /// <response code="200">Returns a token if the authentication was successful.</response>
+        /// <response code="400">Authentication failed.</response>
         [HttpPost]
+        [ProducesResponseType(typeof(string), 200)]
         public async Task<IActionResult> Login([FromBody] string email)
         {
             if (!await _userRepository.IsValidUser(email))
