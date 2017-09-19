@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Messaging.Contract.Models;
 using Messaging.Contract.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -39,7 +40,6 @@ namespace Messaging.Api.Controllers
             if (app == null)
                 return NotFound();
 
-            // TODO: Map to a viewmodel?
             return Ok(app);
         }
 
@@ -68,6 +68,7 @@ namespace Messaging.Api.Controllers
         /// <response code="200">Everything went well.</response>
         /// <response code="404">Application specified by given <paramref name="appId"/> does not exist.</response>
         /// <response code="400">Provided patch is malformed.</response>
+        [Authorize]
         [HttpPatch("{appId}")]
         [ProducesResponseType(typeof(Application), 200)]
         public async Task<IActionResult> Patch(Guid appId, [FromBody]JsonPatchDocument<Application> patch)
