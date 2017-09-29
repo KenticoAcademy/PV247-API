@@ -52,6 +52,7 @@ namespace Messaging.Api.Controllers
         /// <param name="channelId">Channel ID</param>
         /// <param name="message">The message text and metadata</param>
         /// <response code="201">Returns the created message.</response>
+        /// <response code="400">Malformed request</response>
         /// <response code="404">Specified channel not found.</response>
         [HttpPost]
         [ProducesResponseType(typeof(Message), 201)]
@@ -81,6 +82,7 @@ namespace Messaging.Api.Controllers
         /// <param name="messageId">Message ID</param>
         /// <param name="messageUpdate">The message text and metadata</param>
         /// <response code="200">Return the updated message.</response>
+        /// <response code="400">Malformed request</response>
         /// <response code="404">Specified channel or message not found.</response>
         [HttpPut("{messageId}")]
         [ProducesResponseType(typeof(Message), 200)]
