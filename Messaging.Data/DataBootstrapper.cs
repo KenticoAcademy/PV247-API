@@ -11,11 +11,14 @@ namespace Messaging.Data
         public static IServiceCollection AddDataServices(this IServiceCollection services)
         {
             return services
-                .AddSingleton<TableClientFactory>()
+                .AddSingleton<StorageClientFactory>()
                 .AddScoped<IUserRepository, UserRepository>()
                 .AddScoped<IApplicationRepository, ApplicationRepository>()
                 .AddScoped<IMessageRepository, MessageRepository>()
-                .AddScoped<IMessageService, MessageService>();
+                .AddScoped<IMessageService, MessageService>()
+                .AddScoped<IFileBlobRepository, FileBlobRepository>()
+                .AddScoped<IFileMetadataRepository, FileMetadataRepository>()
+                .AddScoped<IFileService, FileService>();
         }
     }
 }

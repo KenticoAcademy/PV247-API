@@ -14,7 +14,7 @@ namespace Messaging.Data.Repositories
         private const string RowKeyPrefix = "M;";
         private readonly CloudTable _table;
 
-        public MessageRepository(TableClientFactory clientFactory)
+        public MessageRepository(StorageClientFactory clientFactory)
         {
             _table = clientFactory.GetTableClient()
                 .GetTableReference("DataTable");

@@ -14,7 +14,7 @@ namespace Messaging.Data.Repositories
 
         private readonly CloudTable _table;
 
-        public UserRepository(TableClientFactory clientFactory)
+        public UserRepository(StorageClientFactory clientFactory)
         {
             _table = clientFactory.GetTableClient()
                 .GetTableReference("DataTable");

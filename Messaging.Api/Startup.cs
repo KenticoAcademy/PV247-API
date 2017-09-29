@@ -80,6 +80,7 @@ namespace Messaging.Api
                     Type = "apiKey",
                     Description = "Please insert JWT with Bearer into field"
                 });
+                options.OperationFilter<FileOperation>();
             });
         }
 
