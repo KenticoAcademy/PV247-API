@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Messaging.Api.ViewModels;
 using Messaging.Contract.Models;
 using Messaging.Contract.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -43,31 +44,30 @@ namespace Messaging.Api.Controllers
         }
 
         /// <summary>
-        /// Registers a new user with given <paramref name="email"/> in specified application.
+        /// Registers a new user with given email in specified application.
         /// </summary>
         /// <param name="appId">Application ID</param>
-        /// <param name="email">Email to identify the user.</param>
-        /// <param name="customData">Custom user metadata</param>
+        /// <param name="registeredUser">Email to identify the user and optional customData serialized to a string.</param>
         /// <response code="201">Returns the newly registered user.</response>
         /// <response code="400">User with given email already exists.</response>
         [HttpPost]
-        public async Task<IActionResult> Register(Guid appId, [FromBody] string email, [FromBody] string customData)
+        public async Task<IActionResult> Register(Guid appId, [FromBody] RegisteredUser registeredUser)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var existing = await _userRepository.Get(appId, email);
+            var existing = await _userRepository.Get(appId, registeredUser.Email);
             if (existing != null)
                 return BadRequest("Email already used.");
 
             var user = new User
             {
-                Email = email,
-                CustomData = customData
+                Email = registeredUser.Email,
+                CustomData = registeredUser.CustomData
             };
             var result = await _userRepository.Upsert(appId, user);
 
-            return Created($"api/{email}", result);
+            return Created($"api/{registeredUser.Email}", result);
         }
 
         /// <summary>
