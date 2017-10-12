@@ -12,7 +12,7 @@ namespace Messaging.Api.Controllers
     /// <summary>
     /// Authentication API
     /// </summary>
-    [Route("api/[controller]")]
+    [Route("api/auth")]
     public class AuthController : Controller
     {
         private readonly IUserRepository _userRepository;

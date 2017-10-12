@@ -57,7 +57,7 @@ namespace Messaging.Api.Controllers
                 Channels = new List<Channel>()
             });
 
-            return Created($"/api/app/{app.Id}", app);
+            return CreatedAtAction(nameof(Get), new { appId = app.Id }, app);
         }
 
         /// <summary>

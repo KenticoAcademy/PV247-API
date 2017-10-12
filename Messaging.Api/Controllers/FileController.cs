@@ -52,7 +52,7 @@ namespace Messaging.Api.Controllers
                 }
             }
 
-            return Created("/api/file/{fileId}", uploadedFiles);
+            return Accepted(uploadedFiles);
         }
 
         /// <summary>

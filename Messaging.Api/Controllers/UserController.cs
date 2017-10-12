@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using Messaging.Api.ViewModels;
 using Messaging.Contract.Models;
@@ -11,7 +12,7 @@ namespace Messaging.Api.Controllers
     /// <summary>
     /// User management API
     /// </summary>
-    [Route("api/{appId}/[controller]")]
+    [Route("api/{appId}/user")]
     public class UserController : Controller
     {
         private readonly IUserRepository _userRepository;
@@ -67,7 +68,7 @@ namespace Messaging.Api.Controllers
             };
             var result = await _userRepository.Upsert(appId, user);
 
-            return Created($"api/{registeredUser.Email}", result);
+            return CreatedAtAction(nameof(Get), new { appId, email = WebUtility.UrlEncode(result.Email) }, result);
         }
 
         /// <summary>

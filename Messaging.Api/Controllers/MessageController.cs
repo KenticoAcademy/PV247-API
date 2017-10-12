@@ -71,7 +71,7 @@ namespace Messaging.Api.Controllers
             if (created == null)
                 return NotFound("Channel not found");
 
-            return Created($"/api/app/{appId}/channel/{channelId}/message", created);
+            return CreatedAtAction(nameof(Get), new { appId, channelId }, created);
         }
 
         /// <summary>
