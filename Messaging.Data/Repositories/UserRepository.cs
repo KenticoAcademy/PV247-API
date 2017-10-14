@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Messaging.Contract.Models;
 using Messaging.Contract.Repositories;
@@ -38,7 +39,7 @@ namespace Messaging.Data.Repositories
 
             return new User
             {
-                Email = user.PartitionKey,
+                Email = user.RowKey.Split(';').Last(),
                 CustomData = userMetadata.CustomData
             };
         }
