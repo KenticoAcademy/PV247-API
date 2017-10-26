@@ -65,6 +65,25 @@ namespace Messaging.Api.Controllers
         /// <summary>
         /// Updates channels in specified application.
         /// </summary>
+        /// <remarks>
+        /// Sample patch:
+        /// 
+        ///     [
+        ///       {
+        ///         "path": "/channels/-",
+        ///         "op": "add",
+        ///         "value": {
+        ///           "id": "My new GUID",
+        ///           "name": "My new channel"
+        ///         }
+        ///       }
+        ///     ]     
+        ///
+        /// Supported operations are "add", "replace", and "remove".
+        /// 
+        /// The path can specify the whole "/channels" collection or a single channel by its ID.
+        /// With the "add" operation, you can use the "-" character instead of the ID to add the item at the end of the collection.
+        /// </remarks>
         /// <param name="appId">Application ID</param>
         /// <param name="patch">Description of application update</param>
         /// <response code="200">Everything went well.</response>
