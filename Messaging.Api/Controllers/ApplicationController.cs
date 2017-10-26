@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Messaging.Api.Services;
 using Messaging.Contract.Models;
 using Messaging.Contract.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -17,13 +17,15 @@ namespace Messaging.Api.Controllers
     public class ApplicationController : Controller
     {
         private readonly IApplicationRepository _applicationRepository;
+        private readonly IChannelPatchService _channelPatchService;
 
         /// <summary>
         /// Constructor for the dependency injection.
         /// </summary>
-        public ApplicationController(IApplicationRepository applicationRepository)
+        public ApplicationController(IApplicationRepository applicationRepository, IChannelPatchService channelPatchService)
         {
             _applicationRepository = applicationRepository;
+            _channelPatchService = channelPatchService;
         }
 
         /// <summary>
@@ -76,12 +78,18 @@ namespace Messaging.Api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (patch.Operations.Any(operation => !operation.path.StartsWith("/channels")))
-                return BadRequest("Unsupported patch");
-
             var existingApp = await _applicationRepository.Get(appId);
             if (existingApp == null)
                 return NotFound();
+
+            try
+            {
+                patch = _channelPatchService.ConvertOperationPaths(patch, existingApp);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
             try
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using Messaging.Api.Services;
 using Messaging.Contract.Models;
 using Messaging.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -61,6 +62,7 @@ namespace Messaging.Api
                     };
                 });
             services.AddDataServices();
+            services.AddTransient<IChannelPatchService, ChannelPatchService>();
 
             // Register the Swagger generator
             services.AddSwaggerGen(options =>
