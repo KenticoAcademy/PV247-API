@@ -37,6 +37,8 @@ namespace Messaging.Api
         /// </summary>
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
+
             // Add framework services.
             services.AddMvc();
             services.Configure<StorageSettings>(Configuration);
@@ -98,6 +100,15 @@ namespace Messaging.Api
 
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+
+            app.UseCors(builder =>
+            {
+                builder
+                    .AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+            });
 
             app.UseAuthentication();
             app.UseMvc();
