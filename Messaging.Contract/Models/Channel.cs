@@ -7,5 +7,7 @@ namespace Messaging.Contract.Models
         public Guid Id { get; set; }
 
         public string Name { get; set; }
+
+        public string CustomData { get; set; }
     }
 }
