@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Messaging.Contract.Models;
@@ -25,6 +26,23 @@ namespace Messaging.Data.Repositories
         {
             var user = await GetUser(email);
             return user != null;
+        }
+
+        public async Task<IEnumerable<User>> Get(Guid appId)
+        {
+            var query = AzureTableHelper.GetRowKeyPrefixQuery<UserMetadataEntity>(appId.ToString(), UserRowKeyPrefix);
+
+            var entities = await AzureTableHelper.GetSegmentedResult(_table, query);
+
+            return entities
+                .Select(metadataEntity => new User
+                {
+                    // The actual user doesn't contain anything except for the email we can get from the RowKey.
+                    // However, if we needed something from the UserEntity, we had to get them one by one.
+                    Email = metadataEntity.RowKey.Split(';').Last(),
+                    CustomData = metadataEntity.CustomData
+                })
+                .ToList();
         }
 
         public async Task<User> Get(Guid appId, string email)

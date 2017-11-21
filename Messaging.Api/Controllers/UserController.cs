@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Messaging.Api.ViewModels;
@@ -23,6 +24,21 @@ namespace Messaging.Api.Controllers
         public UserController(IUserRepository userRepository)
         {
             _userRepository = userRepository;
+        }
+
+        /// <summary>
+        /// Retrieves metadata for all of the users in specified application.
+        /// </summary>
+        /// <param name="appId">Application ID</param>
+        /// <response code="200">Returns the retrieved users metadata.</response>
+        [Authorize]
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<User>), 200)]
+        public async Task<IActionResult> GetApplicationUsers(Guid appId)
+        {
+            var users = await _userRepository.Get(appId);
+
+            return Ok(users);
         }
 
         /// <summary>
