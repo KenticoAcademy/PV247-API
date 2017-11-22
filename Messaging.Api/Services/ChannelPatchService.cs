@@ -2,6 +2,7 @@
 using Messaging.Contract.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
+using Newtonsoft.Json.Linq;
 
 namespace Messaging.Api.Services
 {
@@ -31,9 +32,9 @@ namespace Messaging.Api.Services
                             if (operation.OperationType != OperationType.Add)
                                 throw new InvalidOperationException("Only addition to the end is supported.");
 
-                            if (operation.value is Channel newChannel)
+                            if (operation.value is JObject newChannel)
                             {
-                                newChannel.Id = Guid.NewGuid();
+                                newChannel["id"] = Guid.NewGuid();
                             }
 
                             break;
@@ -48,7 +49,7 @@ namespace Messaging.Api.Services
                         if (channelIndex < 0)
                             throw new InvalidOperationException("Channel with the specified ID was not found.");
 
-                        if (operation.value is Channel updatedChannel && updatedChannel.Id != channelId)
+                        if (operation.value is JObject updatedChannel && updatedChannel["id"]?.ToObject<Guid>() != channelId)
                             throw new InvalidOperationException("Changing ID of an existing channel is not allowed.");
 
                         operation.path = itemPathPrefix + channelIndex;

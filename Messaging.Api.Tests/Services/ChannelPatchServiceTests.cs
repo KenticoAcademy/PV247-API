@@ -5,6 +5,7 @@ using Messaging.Api.Services;
 using Messaging.Contract.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace Messaging.Api.Tests.Services
@@ -26,11 +27,11 @@ namespace Messaging.Api.Tests.Services
             };
 
             var patchDocument = new JsonPatchDocument<Application>();
-            patchDocument.Operations.Add(new Operation<Application>("replace", $"/channels/{channelId}", null,
-                new Channel
+            patchDocument.Operations.Add(new Operation<Application>("replace", $"/channels/{channelId}", null, JObject.FromObject(
+                new
                 {
-                    Id = Guid.NewGuid()
-                }));
+                    id = Guid.NewGuid()
+                })));
 
             Assert.Throws<InvalidOperationException>(() => service.ConvertOperations(patchDocument, application));
         }
@@ -50,11 +51,11 @@ namespace Messaging.Api.Tests.Services
             };
 
             var patchDocument = new JsonPatchDocument<Application>();
-            patchDocument.Operations.Add(new Operation<Application>("replace", $"/channels/{channelId}", null,
-                new Channel
+            patchDocument.Operations.Add(new Operation<Application>("replace", $"/channels/{channelId}", null, JObject.FromObject(
+                new
                 {
-                    Name = "Named channel"
-                }));
+                    name = "Named channel"
+                })));
 
             Assert.Throws<InvalidOperationException>(() => service.ConvertOperations(patchDocument, application));
         }
@@ -72,11 +73,11 @@ namespace Messaging.Api.Tests.Services
             var channelId = Guid.NewGuid();
 
             var patchDocument = new JsonPatchDocument<Application>();
-            patchDocument.Operations.Add(new Operation<Application>("replace", $"/channels/{channelId}", null,
-                new Channel
+            patchDocument.Operations.Add(new Operation<Application>("replace", $"/channels/{channelId}", null, JObject.FromObject(
+                new
                 {
-                    Id = channelId
-                }));
+                    id = channelId
+                })));
 
             Assert.Throws<InvalidOperationException>(() => service.ConvertOperations(patchDocument, application));
         }
@@ -92,10 +93,10 @@ namespace Messaging.Api.Tests.Services
             };
             var nonExistingChannelId = Guid.NewGuid();
             var patchDocument = new JsonPatchDocument<Application>();
-            patchDocument.Operations.Add(new Operation<Application>("add", "/channels/-", null, new Channel
+            patchDocument.Operations.Add(new Operation<Application>("add", "/channels/-", null, JObject.FromObject(new
             {
-                Id = nonExistingChannelId
-            }));
+                id = nonExistingChannelId
+            })));
 
             var convertedPatch = service.ConvertOperations(patchDocument, application);
 
