@@ -9,11 +9,11 @@ namespace Messaging.Api.Services
     public interface IChannelPatchService
     {
         /// <summary>
-        /// Converts channel IDs in the operation paths to indexes of channels in given <paramref name="application"/>.
+        /// Converts channel IDs in the operation paths to indexes of channels in given <paramref name="application"/>. Added channels get a new ID generated.
         /// </summary>
         /// <param name="patch">Patch to be converted</param>
         /// <param name="application">Application the patch should be applied to.</param>
         /// <returns>Processed patch document that can be applied to the <paramref name="application"/>.</returns>
-        JsonPatchDocument<Application> ConvertOperationPaths(JsonPatchDocument<Application> patch, Application application);
+        JsonPatchDocument<Application> ConvertOperations(JsonPatchDocument<Application> patch, Application application);
     }
 }

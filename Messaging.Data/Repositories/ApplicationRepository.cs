@@ -49,7 +49,7 @@ namespace Messaging.Data.Repositories
             return new Application
             {
                 Id = Guid.Parse(entity.PartitionKey),
-                Channels = JsonConvert.DeserializeObject<ICollection<Channel>>(entity.ChannelsJson)
+                Channels = JsonConvert.DeserializeObject<List<Channel>>(entity.ChannelsJson)
             };
         }
     }

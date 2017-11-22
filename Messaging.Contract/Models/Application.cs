@@ -7,6 +7,6 @@ namespace Messaging.Contract.Models
     {
         public Guid Id { get; set; }
 
-        public ICollection<Channel> Channels { get; set; }
+        public List<Channel> Channels { get; set; }
     }
 }

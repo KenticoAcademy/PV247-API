@@ -73,7 +73,6 @@ namespace Messaging.Api.Controllers
         ///         "path": "/channels/-",
         ///         "op": "add",
         ///         "value": {
-        ///           "id": "My new GUID",
         ///           "name": "My new channel"
         ///         }
         ///       }
@@ -103,7 +102,7 @@ namespace Messaging.Api.Controllers
 
             try
             {
-                patch = _channelPatchService.ConvertOperationPaths(patch, existingApp);
+                patch = _channelPatchService.ConvertOperations(patch, existingApp);
             }
             catch (InvalidOperationException ex)
             {
