@@ -64,7 +64,7 @@ namespace Messaging.Api.Controllers
             var messageDto = new Message
             {
                 Value = message.Value,
-                CustomData = message.Value
+                CustomData = message.CustomData
             };
 
             var created = await _messageService.Create(HttpContext.GetCurrentUserId(), appId, channelId, messageDto);
