@@ -39,7 +39,17 @@ namespace Messaging.Data.Repositories
 
             var entities = await AzureTableHelper.GetSegmentedResult(_table, query);
 
-            return entities.Select(ToDto).ToList();
+            IEnumerable<MessageEntity> orderedEntities = entities
+                .OrderByDescending(message => message.CreatedAt);
+
+            if (lastN > 0)
+            {
+                orderedEntities = orderedEntities.Take(lastN);
+            }
+
+            return orderedEntities
+                .Select(ToDto)
+                .ToList();
         }
 
         public async Task<Message> Upsert(Guid appId, Guid channelId, Message message)
