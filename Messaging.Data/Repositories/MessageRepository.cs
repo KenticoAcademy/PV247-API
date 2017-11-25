@@ -55,7 +55,7 @@ namespace Messaging.Data.Repositories
                 UpdatedBy = message.CreatedBy,
                 CustomData = message.CustomData
             };
-            var result = await _table.ExecuteAsync(TableOperation.Insert(entity));
+            var result = await _table.ExecuteAsync(TableOperation.InsertOrReplace(entity));
             var updated = (MessageEntity)result.Result;
 
             return ToDto(updated);
