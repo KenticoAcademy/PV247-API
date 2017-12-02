@@ -55,8 +55,7 @@ namespace Messaging.Api.Controllers
         {
             var app = await _applicationRepository.Upsert(new Application
             {
-                Id = Guid.NewGuid(),
-                Channels = new List<Channel>()
+                Id = Guid.NewGuid()
             });
 
             return CreatedAtAction(nameof(Get), new { appId = app.Id }, app);
