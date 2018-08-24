@@ -8,15 +8,16 @@ namespace Messaging.Api
     /// </summary>
     public class Program
     {
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args) => WebHost.CreateDefaultBuilder(args)
+            .UseStartup<Startup>()
+            .UseApplicationInsights();
+
         /// <summary>
         /// Configures and runs the web server.
         /// </summary>
         public static void Main(string[] args)
         {
-            var host = WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
-                .UseApplicationInsights()
-                .Build();
+            var host = CreateWebHostBuilder(args).Build();
 
             host.Run();
         }
