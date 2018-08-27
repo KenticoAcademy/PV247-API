@@ -10,7 +10,7 @@ using NSubstitute;
 
 namespace Messaging.Api.Tests
 {
-    public static class WebApplicationFactoryExtensions
+    internal static class WebApplicationFactoryExtensions
     {
         public static async Task<HttpClient> CreateAuthenticatedClient(this WebApplicationFactory<Startup> factory,
             IUserRepository userRepositoryMock = null, string emailToAuthenticate = "current@user.test")

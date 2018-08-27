@@ -9,7 +9,6 @@ using Messaging.Contract.Repositories;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using NSubstitute;
 using Xunit;
 
@@ -36,7 +35,8 @@ namespace Messaging.Api.Tests.Controllers
         public async Task UploadFile_Accepted()
         {
             var client = await _factory.CreateAuthenticatedClient();
-            _fileMetadataRepository.CreateFileMetadata(Arg.Any<FileMetadata>()).Returns(call => call.Arg<FileMetadata>());
+            _fileMetadataRepository.CreateFileMetadata(Arg.Any<FileMetadata>())
+                .Returns(call => call.Arg<FileMetadata>());
 
             var fileBytes = Encoding.UTF8.GetBytes("test");
             var fileName = "image.png";
@@ -46,8 +46,8 @@ namespace Messaging.Api.Tests.Controllers
                 {new ByteArrayContent(Encoding.UTF8.GetBytes("test2")), "files", "image2.jpg"}
             });
 
-            var responseContent = await response.EnsureSuccessStatusCode().Content.ReadAsStringAsync();
-            var uploadedFiles = JsonConvert.DeserializeObject<List<FileMetadata>>(responseContent);
+            var uploadedFiles = await response.EnsureSuccessStatusCode()
+                .Content.ReadAsAsync<List<FileMetadata>>();
             Assert.Equal(2, uploadedFiles.Count);
 
             var file = uploadedFiles.First();
@@ -60,13 +60,13 @@ namespace Messaging.Api.Tests.Controllers
         {
             var fileId = Guid.NewGuid();
             var client = await _factory.CreateAuthenticatedClient();
-            _fileMetadataRepository.GetFileMetadata(fileId).Returns(new FileMetadata {Id = fileId});
+            _fileMetadataRepository.GetFileMetadata(fileId)
+                .Returns(new FileMetadata {Id = fileId});
 
             var response = await client.GetAsync($"/api/file/{fileId}");
 
-            var responseContent = await response.EnsureSuccessStatusCode().Content.ReadAsStringAsync();
-            var retrievedMetadata = JsonConvert.DeserializeObject<FileMetadata>(responseContent);
-
+            var retrievedMetadata = await response.EnsureSuccessStatusCode()
+                .Content.ReadAsAsync<FileMetadata>();
             Assert.NotNull(retrievedMetadata);
         }
 
@@ -76,12 +76,15 @@ namespace Messaging.Api.Tests.Controllers
             var fileId = Guid.NewGuid();
             var fakeBlobUrl = new Uri("http://image.url");
             var client = await _factory.CreateAuthenticatedClient();
-            _fileMetadataRepository.GetFileMetadata(fileId).Returns(new FileMetadata {Id = fileId});
-            _fileBlobRepository.GetDownloadUrl(Arg.Is<FileMetadata>(metadata => metadata.Id == fileId)).Returns(fakeBlobUrl);
+            _fileMetadataRepository.GetFileMetadata(fileId)
+                .Returns(new FileMetadata {Id = fileId});
+            _fileBlobRepository.GetDownloadUrl(Arg.Is<FileMetadata>(metadata => metadata.Id == fileId))
+                .Returns(fakeBlobUrl);
 
             var response = await client.GetAsync($"/api/file/{fileId}/download-link");
 
-            var downloadLink = await response.EnsureSuccessStatusCode().Content.ReadAsStringAsync();
+            var downloadLink = await response.EnsureSuccessStatusCode()
+                .Content.ReadAsStringAsync();
 
             Assert.Equal("\"http://image.url\"", downloadLink);
         }

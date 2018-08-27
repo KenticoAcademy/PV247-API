@@ -30,7 +30,8 @@ namespace Messaging.Api.Tests.Controllers
         {
             var email = "test@test.test";
             var client = _factory.CreateClient();
-            _userRepositoryMock.IsValidUser(email).Returns(true);
+            _userRepositoryMock.IsValidUser(email)
+                .Returns(true);
 
             var response = await client.PostAsync("/api/auth", new StringContent($"\"{email}\"", Encoding.UTF8, "application/json"));
 
@@ -41,7 +42,8 @@ namespace Messaging.Api.Tests.Controllers
         public async Task Login_NonExistingUser_BadRequest()
         {
             var client = _factory.CreateClient();
-            _userRepositoryMock.IsValidUser(Arg.Any<string>()).Returns(false);
+            _userRepositoryMock.IsValidUser(Arg.Any<string>())
+                .Returns(false);
 
             var response = await client.PostAsync("/api/auth", new StringContent($"\"test@test.test\"", Encoding.UTF8, "application/json"));
 

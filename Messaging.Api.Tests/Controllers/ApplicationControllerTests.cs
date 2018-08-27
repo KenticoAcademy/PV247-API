@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Messaging.Contract.Models;
 using Messaging.Contract.Repositories;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using NSubstitute;
 using Xunit;
 
@@ -34,14 +32,13 @@ namespace Messaging.Api.Tests.Controllers
         {
             var client = _factory.CreateClient();
             var appId = Guid.NewGuid();
-            _applicationRepositoryMock.Get(appId).Returns(new Application {Id = appId});
+            _applicationRepositoryMock.Get(appId)
+                .Returns(new Application {Id = appId});
 
             var response = await client.GetAsync($"/api/app/{appId}");
 
-            var responseContent = await response.EnsureSuccessStatusCode()
-                .Content.ReadAsStringAsync();
-
-            var retrievedApp = JsonConvert.DeserializeObject<Application>(responseContent);
+            var retrievedApp = await response.EnsureSuccessStatusCode()
+                .Content.ReadAsAsync<Application>();
             Assert.Equal(appId, retrievedApp.Id);
         }
 
@@ -49,7 +46,8 @@ namespace Messaging.Api.Tests.Controllers
         public async Task Get_NonExistingApp_NotFound()
         {
             var client = _factory.CreateClient();
-            _applicationRepositoryMock.Get(Arg.Any<Guid>()).Returns((Application)null);
+            _applicationRepositoryMock.Get(Arg.Any<Guid>())
+                .Returns((Application)null);
 
             var response = await client.GetAsync($"/api/app/{Guid.NewGuid()}");
 
@@ -60,14 +58,13 @@ namespace Messaging.Api.Tests.Controllers
         public async Task Create_Created()
         {
             var client = _factory.CreateClient();
-            _applicationRepositoryMock.Upsert(Arg.Any<Application>()).Returns(call => call.Arg<Application>());
+            _applicationRepositoryMock.Upsert(Arg.Any<Application>())
+                .Returns(call => call.Arg<Application>());
 
             var response = await client.PostAsync("/api/app", null);
 
-            var responseContent = await response.EnsureSuccessStatusCode()
-                .Content.ReadAsStringAsync();
-
-            var createdApp = JsonConvert.DeserializeObject<Application>(responseContent);
+            var createdApp = await response.EnsureSuccessStatusCode()
+                .Content.ReadAsAsync<Application>();
             Assert.NotEqual(Guid.Empty, createdApp.Id);
         }
 
@@ -76,22 +73,21 @@ namespace Messaging.Api.Tests.Controllers
         {
             var appId = Guid.NewGuid();
             var client = await _factory.CreateAuthenticatedClient();
-            _applicationRepositoryMock.Get(appId).Returns(new Application {Id = appId, Channels = new List<Channel>{ new Channel() }});
-            _applicationRepositoryMock.Upsert(Arg.Any<Application>()).Returns(call => call.Arg<Application>());
+            _applicationRepositoryMock.Get(appId)
+                .Returns(new Application {Id = appId, Channels = new List<Channel>{ new Channel() }});
+            _applicationRepositoryMock.Upsert(Arg.Any<Application>())
+                .Returns(call => call.Arg<Application>());
             
             var response = await client.SendAsync(new HttpRequestMessage(new HttpMethod("PATCH"), $"/api/app/{appId}")
             {
-                Content = new StringContent(JsonConvert.SerializeObject(new[]
+                Content = new JsonContent(new[]
                 {
                     new {op = "add", path = "/channels/-", value = new Channel()}
-                }), Encoding.UTF8, "application/json")
+                })
             });
 
-            var responseContent = await response.EnsureSuccessStatusCode()
-                .Content.ReadAsStringAsync();
-
-            var patchedApp = JsonConvert.DeserializeObject<Application>(responseContent);
-
+            var patchedApp = await response.EnsureSuccessStatusCode()
+                .Content.ReadAsAsync<Application>();
             Assert.Equal(2, patchedApp.Channels.Count);
         }
     }
