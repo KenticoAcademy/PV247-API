@@ -1,7 +1,7 @@
 ﻿using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
+using Messaging.Api.Models;
 using Messaging.Contract.Repositories;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -24,11 +24,11 @@ namespace Messaging.Api.Tests
                     .ConfigureTestServices(services => services.AddScoped(_ => userRepository)))
                 .CreateClient();
 
-            var response = await client.PostAsync("/api/auth", new StringContent($"\"{emailToAuthenticate}\"", Encoding.UTF8, "application/json"));
+            var response = await client.PostAsync("/api/auth", new JsonContent(new LoginCredentials {Email = emailToAuthenticate}));
             var token = await response.EnsureSuccessStatusCode()
-                .Content.ReadAsStringAsync();
+                .Content.ReadAsAsync<LoginResponse>();
 
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Token);
 
             return client;
         }

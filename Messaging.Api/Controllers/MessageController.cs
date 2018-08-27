@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Messaging.Api.ViewModels;
+using Messaging.Api.Models;
 using Messaging.Contract.Models;
 using Messaging.Contract.Services;
 using Microsoft.AspNetCore.Authorization;

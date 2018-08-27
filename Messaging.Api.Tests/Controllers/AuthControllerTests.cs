@@ -1,7 +1,6 @@
 ﻿using System.Net;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
+using Messaging.Api.Models;
 using Messaging.Contract.Repositories;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -33,9 +32,12 @@ namespace Messaging.Api.Tests.Controllers
             _userRepositoryMock.IsValidUser(email)
                 .Returns(true);
 
-            var response = await client.PostAsync("/api/auth", new StringContent($"\"{email}\"", Encoding.UTF8, "application/json"));
+            var response = await client.PostAsync("/api/auth", new JsonContent(new { email }));
 
-            response.EnsureSuccessStatusCode();
+            var token = await response.EnsureSuccessStatusCode()
+                .Content.ReadAsAsync<LoginResponse>();
+
+            Assert.NotNull(token);
         }
 
         [Fact]
@@ -45,7 +47,7 @@ namespace Messaging.Api.Tests.Controllers
             _userRepositoryMock.IsValidUser(Arg.Any<string>())
                 .Returns(false);
 
-            var response = await client.PostAsync("/api/auth", new StringContent($"\"test@test.test\"", Encoding.UTF8, "application/json"));
+            var response = await client.PostAsync("/api/auth", new JsonContent(new {Email = "test@test.test"}));
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }

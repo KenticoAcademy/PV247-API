@@ -1,7 +1,7 @@
-﻿namespace Messaging.Api.ViewModels
+﻿namespace Messaging.Api.Models
 {
     /// <summary>
-    /// View-model of the message update.
+    /// Model of the message update.
     /// </summary>
     public class EditedMessage
     {
