@@ -2,6 +2,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Messaging.Api.Models;
 using Messaging.Contract.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -30,23 +31,26 @@ namespace Messaging.Api.Controllers
         /// <summary>
         /// Returns token that can be used to authenticate API calls.
         /// </summary>
-        /// <param name="email">Email identifying a user.</param>
+        /// <param name="credentials">Provide an email identifying a user.</param>
         /// <response code="200">Returns a token if the authentication was successful.</response>
         /// <response code="400">Authentication failed.</response>
         [HttpPost]
-        [ProducesResponseType(typeof(string), 200)]
-        public async Task<IActionResult> Login([FromBody] string email)
+        [ProducesResponseType(typeof(LoginResponse), 200)]
+        public async Task<IActionResult> Login([FromBody] LoginCredentials credentials)
         {
-            if (!await _userRepository.IsValidUser(email))
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!await _userRepository.IsValidUser(credentials.Email))
             {
-                return BadRequest("Invalid email or password");
+                return BadRequest("Invalid email");
             }
 
             var now = DateTime.UtcNow;
 
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, email),
+                new Claim(JwtRegisteredClaimNames.Sub, credentials.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, new DateTimeOffset(now)
                     .ToUniversalTime()
@@ -55,18 +59,23 @@ namespace Messaging.Api.Controllers
             };
             var signingCredentials = new SigningCredentials(_authSettings.TokenSigningKey, SecurityAlgorithms.HmacSha256);
 
+            var expiration = now.AddDays(1);
             var jwt = new JwtSecurityToken(
                 issuer: "PV247 API",
                 audience: "PV247 Students",
                 claims: claims,
                 notBefore: now,
-                expires: now.AddDays(1),
+                expires: expiration,
                 signingCredentials: signingCredentials);
 
             var encodedJwt = new JwtSecurityTokenHandler()
                 .WriteToken(jwt);
 
-            return Ok(encodedJwt);
+            return Ok(new LoginResponse
+            {
+                Token = encodedJwt,
+                Expiration = expiration
+            });
         }
     }
 }

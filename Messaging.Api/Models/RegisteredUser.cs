@@ -1,7 +1,7 @@
-﻿namespace Messaging.Api.ViewModels
+﻿namespace Messaging.Api.Models
 {
     /// <summary>
-    /// View-model for user registration.
+    /// Model for user registration.
     /// </summary>
     public class RegisteredUser
     {
