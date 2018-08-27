@@ -10,7 +10,6 @@ using Messaging.Contract.Repositories;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using NSubstitute;
 using Xunit;
 
@@ -33,16 +32,15 @@ namespace Messaging.Api.Tests.Controllers
         public async Task GetApplicationUsers_Existing_Ok()
         {
             var appId = Guid.NewGuid();
-            _userRepository.Get(appId).Returns(new[] { new User(), new User(), new User() });
+            _userRepository.Get(appId)
+                .Returns(new[] { new User(), new User(), new User() });
 
             var client = await _factory.CreateAuthenticatedClient(_userRepository);
             
             var response = await client.GetAsync($"/api/{appId}/user");
 
-            var responseContent = await response.EnsureSuccessStatusCode()
-                .Content.ReadAsStringAsync();
-
-            var users = JsonConvert.DeserializeObject<List<User>>(responseContent);
+            var users = await response.EnsureSuccessStatusCode()
+                .Content.ReadAsAsync<List<User>>();
 
             Assert.Equal(3, users.Count);
         }
@@ -54,14 +52,15 @@ namespace Messaging.Api.Tests.Controllers
             var email = "test@test.test";
             var client = await _factory.CreateAuthenticatedClient(_userRepository);
 
-            _userRepository.Get(appId, email).Returns(new User { Email = email });
+            _userRepository.Get(appId, email)
+                .Returns(new User { Email = email });
 
             var response = await client.GetAsync($"/api/{appId}/user/{email}");
 
-            var responseContent = await response.EnsureSuccessStatusCode()
-                .Content.ReadAsStringAsync();
+            var retrievedUser = await response.EnsureSuccessStatusCode()
+                .Content.ReadAsAsync<User>();
 
-            Assert.NotNull(JsonConvert.DeserializeObject<User>(responseContent));
+            Assert.NotNull(retrievedUser);
         }
 
         [Fact]
@@ -71,22 +70,23 @@ namespace Messaging.Api.Tests.Controllers
             string email = "test@test.test";
             var client = _factory.CreateClient();
 
-            _userRepository.Upsert(appId, Arg.Any<User>()).Returns(call => call.Arg<User>());
+            _userRepository.Upsert(appId, Arg.Any<User>())
+                .Returns(call => call.Arg<User>());
 
-            var response = await client.PostAsync($"/api/{appId}/user", new StringContent(JsonConvert
-                .SerializeObject(new RegisteredUser
+            var response = await client.PostAsync($"/api/{appId}/user", new JsonContent(new RegisteredUser
                 {
                     Email = email,
                     CustomData = "{ json: true }"
-                }), Encoding.UTF8, "application/json"));
+                }));
 
             response.EnsureSuccessStatusCode();
 
             Assert.Equal($"/api/{appId}/user/{WebUtility.UrlEncode(email)}", response.Headers.Location.LocalPath);
 
-            var responseContent = await response.Content.ReadAsStringAsync();
+            var createdUser = await response.EnsureSuccessStatusCode()
+                .Content.ReadAsAsync<User>();
 
-            Assert.NotNull(JsonConvert.DeserializeObject<User>(responseContent));
+            Assert.NotNull(createdUser);
         }
 
         [Fact]
@@ -96,10 +96,10 @@ namespace Messaging.Api.Tests.Controllers
             string email = "test@test.test";
             var client = _factory.CreateClient();
 
-            _userRepository.Get(appId, email).Returns(new User {Email = email});
+            _userRepository.Get(appId, email)
+                .Returns(new User {Email = email});
 
-            var response = await client.PostAsync($"/api/{appId}/user", new StringContent(JsonConvert
-                .SerializeObject(new RegisteredUser { Email = email }), Encoding.UTF8, "application/json"));
+            var response = await client.PostAsync($"/api/{appId}/user", new JsonContent(new RegisteredUser { Email = email }));
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
             await _userRepository.DidNotReceiveWithAnyArgs().Upsert(appId, Arg.Any<User>());
@@ -112,14 +112,17 @@ namespace Messaging.Api.Tests.Controllers
             var email = "test@test.test";
             var client = await _factory.CreateAuthenticatedClient(_userRepository, email);
 
-            _userRepository.Get(appId, email).Returns(new User {Email = email});
-            _userRepository.Upsert(appId, Arg.Any<User>()).Returns(call => call.Arg<User>());
+            _userRepository.Get(appId, email)
+                .Returns(new User {Email = email});
+            _userRepository.Upsert(appId, Arg.Any<User>())
+                .Returns(call => call.Arg<User>());
 
             var response = await client.PutAsync($"/api/{appId}/user/{email}", new StringContent("\"{ json: true }\"", Encoding.UTF8, "application/json"));
 
-            var responseContent = await response.EnsureSuccessStatusCode().Content.ReadAsStringAsync();
+            var updatedUser = await response.EnsureSuccessStatusCode()
+                .Content.ReadAsAsync<User>();
 
-            Assert.NotNull(JsonConvert.DeserializeObject<User>(responseContent));
+            Assert.NotNull(updatedUser);
         }
 
         [Fact]
@@ -129,7 +132,8 @@ namespace Messaging.Api.Tests.Controllers
             var email = "test@test.test";
             var client = await _factory.CreateAuthenticatedClient(_userRepository);
 
-            _userRepository.Get(appId, email).Returns(new User { Email = email });
+            _userRepository.Get(appId, email)
+                .Returns(new User { Email = email });
 
             var response = await client.PutAsync($"/api/{appId}/user/{email}", new StringContent("\"{ json: true }\"", Encoding.UTF8, "application/json"));
 
