@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Messaging.Api.Services;
@@ -83,6 +84,10 @@ namespace Messaging.Api
                     Name = "Authorization",
                     Type = "apiKey",
                     Description = "Please insert JWT with Bearer into field"
+                });
+                options.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+                {
+                    { "Bearer", new string[] {} }
                 });
                 options.OperationFilter<FileOperation>();
             });
