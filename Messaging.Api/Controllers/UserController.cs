@@ -92,13 +92,13 @@ namespace Messaging.Api.Controllers
         /// </summary>
         /// <param name="appId">Application ID</param>
         /// <param name="email">Email to identify the user.</param>
-        /// <param name="customData">Custom user metadata</param>
+        /// <param name="updateModel">Custom user metadata</param>
         /// <response code="200">Returns the updated user.</response>
         /// <response code="403">When attempting to update someone else.</response>
         /// <response code="404">When the specified user doesn't exist.</response>
         [Authorize]
         [HttpPut("{email}")]
-        public async Task<IActionResult> Update(Guid appId, string email, [FromBody]string customData)
+        public async Task<IActionResult> Update(Guid appId, string email, [FromBody]UserUpdate updateModel)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -110,7 +110,7 @@ namespace Messaging.Api.Controllers
             if (user == null)
                 return NotFound();
 
-            user.CustomData = customData;
+            user.CustomData = updateModel.CustomData;
 
             var result = await _userRepository.Upsert(appId, user);
 

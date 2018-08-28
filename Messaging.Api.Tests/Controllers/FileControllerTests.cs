@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Messaging.Api.Models;
 using Messaging.Contract.Models;
 using Messaging.Contract.Repositories;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -84,9 +85,9 @@ namespace Messaging.Api.Tests.Controllers
             var response = await client.GetAsync($"/api/file/{fileId}/download-link");
 
             var downloadLink = await response.EnsureSuccessStatusCode()
-                .Content.ReadAsStringAsync();
+                .Content.ReadAsAsync<DownloadLinkResponse>();
 
-            Assert.Equal("\"http://image.url\"", downloadLink);
+            Assert.Equal(fakeBlobUrl, downloadLink.FileUri);
         }
     }
 }
