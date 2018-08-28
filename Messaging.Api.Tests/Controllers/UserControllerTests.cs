@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Messaging.Api.Models;
 using Messaging.Contract.Models;
@@ -117,7 +115,7 @@ namespace Messaging.Api.Tests.Controllers
             _userRepository.Upsert(appId, Arg.Any<User>())
                 .Returns(call => call.Arg<User>());
 
-            var response = await client.PutAsync($"/api/{appId}/user/{email}", new StringContent("\"{ json: true }\"", Encoding.UTF8, "application/json"));
+            var response = await client.PutAsync($"/api/{appId}/user/{email}", new JsonContent(new UserUpdate { CustomData = "{ json: true }" }));
 
             var updatedUser = await response.EnsureSuccessStatusCode()
                 .Content.ReadAsAsync<User>();
@@ -135,7 +133,7 @@ namespace Messaging.Api.Tests.Controllers
             _userRepository.Get(appId, email)
                 .Returns(new User { Email = email });
 
-            var response = await client.PutAsync($"/api/{appId}/user/{email}", new StringContent("\"{ json: true }\"", Encoding.UTF8, "application/json"));
+            var response = await client.PutAsync($"/api/{appId}/user/{email}", new JsonContent(new UserUpdate { CustomData = "{ json: true }" }));
 
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
 
@@ -150,7 +148,7 @@ namespace Messaging.Api.Tests.Controllers
             var email = "test@test.test";
             var client = await _factory.CreateAuthenticatedClient(_userRepository, email);
 
-            var response = await client.PutAsync($"/api/{appId}/user/{email}", new StringContent("\"{ json: true }\"", Encoding.UTF8, "application/json"));
+            var response = await client.PutAsync($"/api/{appId}/user/{email}", new JsonContent(new UserUpdate{ CustomData = "{ json: true }" }));
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }

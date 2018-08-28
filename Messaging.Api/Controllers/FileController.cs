@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Messaging.Api.Models;
 using Messaging.Contract.Models;
 using Messaging.Contract.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -84,7 +85,7 @@ namespace Messaging.Api.Controllers
         /// <response code="400">Malformed request</response>
         /// <response code="404">Specified file doesn't exist.</response>
         [HttpGet("{fileId}/download-link")]
-        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(DownloadLinkResponse), 200)]
         public async Task<ActionResult> GetDownloadLink(Guid fileId)
         {
             if (!ModelState.IsValid)
@@ -94,7 +95,7 @@ namespace Messaging.Api.Controllers
             if (uri == null)
                 return NotFound("File not found");
 
-            return Ok(uri);
+            return Ok(new DownloadLinkResponse { FileUri = uri });
         }
     }
 }
