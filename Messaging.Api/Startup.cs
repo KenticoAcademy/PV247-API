@@ -81,7 +81,7 @@ namespace Messaging.Api
                     In = "header",
                     Name = "Authorization",
                     Type = "apiKey",
-                    Description = "Please insert JWT with Bearer into field"
+                    Description = "Insert \"Bearer \" followed by your JWT into the field"
                 });
                 options.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
                 {

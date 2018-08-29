@@ -33,10 +33,10 @@ namespace Messaging.Api.Controllers
         /// Uploads a new file and creates corresponding file metadata.
         /// </summary>
         /// <param name="files">Files from the file input.</param>
-        /// <response code="201">Returns metadata for the uploaded files.</response>
+        /// <response code="202">Returns metadata for the uploaded files.</response>
         /// <response code="400">Malformed request</response>
         [HttpPost]
-        [ProducesResponseType(typeof(IEnumerable<FileMetadata>), 201)]
+        [ProducesResponseType(typeof(IEnumerable<FileMetadata>), 202)]
         public async Task<ActionResult> UploadFile(IEnumerable<IFormFile> files)
         {
             if (!ModelState.IsValid)
