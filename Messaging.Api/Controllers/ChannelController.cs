@@ -135,7 +135,7 @@ namespace Messaging.Api.Controllers
         /// </summary>
         /// <param name="appId">Application ID</param>
         /// <param name="channelId">Channel ID</param>
-        /// <response code="200">Specified channel has been deleted.</response>
+        /// <response code="204">Specified channel has been deleted.</response>
         /// <response code="404">Specified application or channel not found.</response>
 		[HttpDelete("{channelId}")]
         public async Task<IActionResult> DeleteChannel(Guid appId, Guid channelId)

@@ -112,7 +112,7 @@ namespace Messaging.Api.Controllers
         /// <param name="appId">Application ID</param>
         /// <param name="channelId">Channel ID</param>
         /// <param name="messageId">Message ID</param>
-        /// <response code="200">Specified message has been deleted.</response>
+        /// <response code="204">Specified message has been deleted.</response>
         /// <response code="404">Specified channel or message not found.</response>
         [HttpDelete("{messageId}")]
         public async Task<IActionResult> Delete(Guid appId, Guid channelId, Guid messageId)
@@ -121,7 +121,7 @@ namespace Messaging.Api.Controllers
             if (!wasDeleted)
                 return NotFound("Channel or message not found");
 
-            return Ok();
+            return NoContent();
         }
     }
 }
