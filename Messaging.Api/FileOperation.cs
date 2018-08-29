@@ -14,7 +14,7 @@ namespace Messaging.Api
         /// </summary>
         public void Apply(Operation operation, OperationFilterContext context)
         {
-            if (operation.OperationId.Equals("apifilepost", StringComparison.OrdinalIgnoreCase))
+            if (operation.OperationId.EndsWith("filepost", StringComparison.OrdinalIgnoreCase))
             {
                 operation.Parameters.Clear();
                 operation.Parameters.Add(new NonBodyParameter

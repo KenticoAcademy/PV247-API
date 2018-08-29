@@ -14,8 +14,9 @@ namespace Messaging.Api.Controllers
     /// <summary>
     /// File management API
     /// </summary>
+    [ApiVersion("2.0")]
     [Authorize]
-    [Route("api/file")]
+    [Route("api/v{version:apiVersion}/file")]
     public class FileController : Controller
     {
         private readonly IFileService _fileService;

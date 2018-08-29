@@ -13,7 +13,8 @@ namespace Messaging.Api.Controllers
     /// <summary>
     /// User management API
     /// </summary>
-    [Route("api/{appId}/user")]
+    [ApiVersion("2.0")]
+    [Route("api/v{version:apiVersion}/{appId}/user")]
     public class UserController : Controller
     {
         private readonly IUserRepository _userRepository;

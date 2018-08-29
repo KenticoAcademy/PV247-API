@@ -24,7 +24,7 @@ namespace Messaging.Api.Tests
                     .ConfigureTestServices(services => services.AddScoped(_ => userRepository)))
                 .CreateClient();
 
-            var response = await client.PostAsync("/api/auth", new JsonContent(new LoginCredentials {Email = emailToAuthenticate}));
+            var response = await client.PostAsync("/api/v2/auth", new JsonContent(new LoginCredentials {Email = emailToAuthenticate}));
             var token = await response.EnsureSuccessStatusCode()
                 .Content.ReadAsAsync<LoginResponse>();
 

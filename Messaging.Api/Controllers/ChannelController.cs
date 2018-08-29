@@ -13,8 +13,9 @@ namespace Messaging.Api.Controllers
     /// <summary>
     /// Channel management API
     /// </summary>
-	[Authorize]
-	[Route("api/app/{appId}/channel")]
+    [ApiVersion("2.0")]
+    [Authorize]
+	[Route("api/v{version:apiVersion}/app/{appId}/channel")]
     public class ChannelController : Controller
     {
         private readonly IApplicationRepository _applicationRepository;

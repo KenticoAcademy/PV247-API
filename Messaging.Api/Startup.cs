@@ -40,7 +40,17 @@ namespace Messaging.Api
             services.AddCors();
 
             // Add framework services.
+            services.AddMvcCore()
+                .AddVersionedApiExplorer(options =>
+                {
+                    options.GroupNameFormat = "'v'VVV";
+                    options.SubstituteApiVersionInUrl = true;
+                });
             services.AddMvc();
+            services.AddApiVersioning(options =>
+            {
+                options.ReportApiVersions = true;
+            });
             services.Configure<StorageSettings>(Configuration);
 
             var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration.GetValue<string>("TokenSigningKey")));
@@ -68,13 +78,12 @@ namespace Messaging.Api
             // Register the Swagger generator
             services.AddSwaggerGen(options =>
             {
-                options.SwaggerDoc("v1", new Info
+                options.SwaggerDoc("v2", new Info
                 {
                     Title = "Messaging API",
-                    Version = "v1",
+                    Version = "v2",
                     Description = "Back-end API for the PV247 project"
                 });
-
                 options.IncludeXmlComments(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "Messaging.Api.xml"));
                 options.AddSecurityDefinition("Bearer", new ApiKeyScheme
                 {
@@ -123,7 +132,7 @@ namespace Messaging.Api
             app.UseSwaggerUI(options =>
             {
                 options.RoutePrefix = "help";
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Messaging API");
+                options.SwaggerEndpoint("/swagger/v2/swagger.json", "Messaging API");
             });
         }
     }

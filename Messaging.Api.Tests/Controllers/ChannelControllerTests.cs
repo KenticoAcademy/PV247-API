@@ -42,7 +42,7 @@ namespace Messaging.Api.Tests.Controllers
                 }
             });
 
-            var response = await client.GetAsync($"/api/app/{appId}/channel");
+            var response = await client.GetAsync($"/api/v2/app/{appId}/channel");
 
             var retrievedChannels = await response.EnsureSuccessStatusCode()
                 .Content.ReadAsAsync<List<Channel>>();
@@ -64,7 +64,7 @@ namespace Messaging.Api.Tests.Controllers
                 }
             });
 
-            var response = await client.GetAsync($"/api/app/{appId}/channel/{channelId}");
+            var response = await client.GetAsync($"/api/v2/app/{appId}/channel/{channelId}");
 
             var retrievedChannel = await response.EnsureSuccessStatusCode()
                 .Content.ReadAsAsync<Channel>();
@@ -87,7 +87,7 @@ namespace Messaging.Api.Tests.Controllers
                 }
             });
             
-            var response = await client.PostAsync($"/api/app/{appId}/channel", new JsonContent(new ChannelUpdate
+            var response = await client.PostAsync($"/api/v2/app/{appId}/channel", new JsonContent(new ChannelUpdate
             {
                 Name = channelName,
                 CustomData = channelCustomData
@@ -119,7 +119,7 @@ namespace Messaging.Api.Tests.Controllers
                 }
             });
 
-            var response = await client.PutAsync($"/api/app/{appId}/channel/{channelId}", new JsonContent(new ChannelUpdate
+            var response = await client.PutAsync($"/api/v2/app/{appId}/channel/{channelId}", new JsonContent(new ChannelUpdate
             {
                 Name = channelName,
                 CustomData = channelCustomData
@@ -155,7 +155,7 @@ namespace Messaging.Api.Tests.Controllers
                 }
 		    });
 
-		    var response = await client.DeleteAsync($"/api/app/{appId}/channel/{channelId}");
+		    var response = await client.DeleteAsync($"/api/v2/app/{appId}/channel/{channelId}");
 
 		    response.EnsureSuccessStatusCode();
 		    await _applicationRepository.Received().Upsert(Arg.Is<Application>(app =>

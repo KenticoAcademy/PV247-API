@@ -35,7 +35,7 @@ namespace Messaging.Api.Tests.Controllers
             _applicationRepositoryMock.Get(appId)
                 .Returns(new Application {Id = appId});
 
-            var response = await client.GetAsync($"/api/app/{appId}");
+            var response = await client.GetAsync($"/api/v2/app/{appId}");
 
             var retrievedApp = await response.EnsureSuccessStatusCode()
                 .Content.ReadAsAsync<ApplicationResponse>();
@@ -49,7 +49,7 @@ namespace Messaging.Api.Tests.Controllers
             _applicationRepositoryMock.Get(Arg.Any<Guid>())
                 .Returns((Application)null);
 
-            var response = await client.GetAsync($"/api/app/{Guid.NewGuid()}");
+            var response = await client.GetAsync($"/api/v2/app/{Guid.NewGuid()}");
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
@@ -62,7 +62,7 @@ namespace Messaging.Api.Tests.Controllers
                 .Returns(call => call.Arg<Application>());
 
             var customData = JObject.FromObject(new { json = true });
-            var response = await client.PostAsync("/api/app", new JsonContent(new ApplicationUpdate
+            var response = await client.PostAsync("/api/v2/app", new JsonContent(new ApplicationUpdate
             {
                 CustomData = customData
             }));
@@ -84,7 +84,7 @@ namespace Messaging.Api.Tests.Controllers
                 .Returns(call => call.Arg<Application>());
 
             var newCustomData = JObject.FromObject(new { json = true });
-            var response = await client.PutAsync($"/api/app/{appId}", new JsonContent(new ApplicationUpdate
+            var response = await client.PutAsync($"/api/v2/app/{appId}", new JsonContent(new ApplicationUpdate
             {
                 CustomData = newCustomData
             }));

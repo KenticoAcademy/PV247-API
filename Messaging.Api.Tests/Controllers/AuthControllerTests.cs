@@ -32,7 +32,7 @@ namespace Messaging.Api.Tests.Controllers
             _userRepositoryMock.IsValidUser(email)
                 .Returns(true);
 
-            var response = await client.PostAsync("/api/auth", new JsonContent(new { email }));
+            var response = await client.PostAsync("/api/v2/auth", new JsonContent(new { email }));
 
             var token = await response.EnsureSuccessStatusCode()
                 .Content.ReadAsAsync<LoginResponse>();
@@ -47,7 +47,7 @@ namespace Messaging.Api.Tests.Controllers
             _userRepositoryMock.IsValidUser(Arg.Any<string>())
                 .Returns(false);
 
-            var response = await client.PostAsync("/api/auth", new JsonContent(new {Email = "test@test.test"}));
+            var response = await client.PostAsync("/api/v2/auth", new JsonContent(new {Email = "test@test.test"}));
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
