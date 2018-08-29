@@ -7,6 +7,7 @@ using Messaging.Contract.Repositories;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
 using NSubstitute;
 using Xunit;
 
@@ -60,7 +61,7 @@ namespace Messaging.Api.Tests.Controllers
             _applicationRepositoryMock.Upsert(Arg.Any<Application>())
                 .Returns(call => call.Arg<Application>());
 
-            var customData = "{ json: true }";
+            var customData = JObject.FromObject(new { json = true });
             var response = await client.PostAsync("/api/app", new JsonContent(new ApplicationUpdate
             {
                 CustomData = customData
@@ -82,7 +83,7 @@ namespace Messaging.Api.Tests.Controllers
             _applicationRepositoryMock.Upsert(Arg.Any<Application>())
                 .Returns(call => call.Arg<Application>());
 
-            var newCustomData = "{ json: true }";
+            var newCustomData = JObject.FromObject(new { json = true });
             var response = await client.PutAsync($"/api/app/{appId}", new JsonContent(new ApplicationUpdate
             {
                 CustomData = newCustomData

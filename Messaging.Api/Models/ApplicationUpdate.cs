@@ -1,4 +1,6 @@
-﻿namespace Messaging.Api.Models
+﻿using Newtonsoft.Json.Linq;
+
+namespace Messaging.Api.Models
 {
     /// <summary>
     /// Model for the application update
@@ -8,6 +10,6 @@
         /// <summary>
         /// New application custom metadata
         /// </summary>
-        public string CustomData { get; set; }
+        public JObject CustomData { get; set; }
     }
 }

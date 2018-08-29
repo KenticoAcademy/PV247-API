@@ -6,6 +6,8 @@ using Messaging.Contract.Models;
 using Messaging.Contract.Repositories;
 using Messaging.Data.Models;
 using Microsoft.WindowsAzure.Storage.Table;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Messaging.Data.Repositories
 {
@@ -63,7 +65,7 @@ namespace Messaging.Data.Repositories
                 CreatedBy = message.CreatedBy,
                 UpdatedAt = message.CreatedAt,
                 UpdatedBy = message.CreatedBy,
-                CustomData = message.CustomData
+                CustomData = JsonConvert.SerializeObject(message.CustomData)
             };
             var result = await _table.ExecuteAsync(TableOperation.InsertOrReplace(entity));
             var updated = (MessageEntity)result.Result;
@@ -92,7 +94,7 @@ namespace Messaging.Data.Repositories
             CreatedBy = entity.CreatedBy,
             UpdatedAt = entity.UpdatedAt,
             UpdatedBy = entity.UpdatedBy,
-            CustomData = entity.CustomData
+            CustomData = JsonConvert.DeserializeObject<JObject>(entity.CustomData)
         };
     }
 }
