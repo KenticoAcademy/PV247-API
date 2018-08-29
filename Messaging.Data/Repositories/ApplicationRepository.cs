@@ -35,6 +35,7 @@ namespace Messaging.Data.Repositories
             {
                 PartitionKey = app.Id.ToString(),
                 RowKey = ApplicationRowKey,
+                CustomDataJson = app.CustomData,
                 ChannelsJson = JsonConvert.SerializeObject(app.Channels)
             };
 
@@ -49,6 +50,7 @@ namespace Messaging.Data.Repositories
             return new Application
             {
                 Id = Guid.Parse(entity.PartitionKey),
+                CustomData = entity.CustomDataJson,
                 Channels = JsonConvert.DeserializeObject<List<Channel>>(entity.ChannelsJson) ?? new List<Channel>()
             };
         }

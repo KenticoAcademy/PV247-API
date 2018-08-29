@@ -60,11 +60,38 @@ namespace Messaging.Api.Tests.Controllers
             _applicationRepositoryMock.Upsert(Arg.Any<Application>())
                 .Returns(call => call.Arg<Application>());
 
-            var response = await client.PostAsync("/api/app", null);
+            var customData = "{ json: true }";
+            var response = await client.PostAsync("/api/app", new JsonContent(new ApplicationUpdate
+            {
+                CustomData = customData
+            }));
 
             var createdApp = await response.EnsureSuccessStatusCode()
                 .Content.ReadAsAsync<ApplicationResponse>();
             Assert.NotEqual(Guid.Empty, createdApp.Id);
+            Assert.Equal(customData, createdApp.CustomData);
+        }
+
+        [Fact]
+        public async Task Update_ExistingApp_Ok()
+        {
+            var client = await _factory.CreateAuthenticatedClient();
+            var appId = Guid.NewGuid();
+            _applicationRepositoryMock.Get(appId)
+                .Returns(new Application { Id = appId });
+            _applicationRepositoryMock.Upsert(Arg.Any<Application>())
+                .Returns(call => call.Arg<Application>());
+
+            var newCustomData = "{ json: true }";
+            var response = await client.PutAsync($"/api/app/{appId}", new JsonContent(new ApplicationUpdate
+            {
+                CustomData = newCustomData
+            }));
+
+            var updatedApp = await response.EnsureSuccessStatusCode()
+                .Content.ReadAsAsync<ApplicationResponse>();
+            Assert.Equal(appId, updatedApp.Id);
+            Assert.Equal(newCustomData, updatedApp.CustomData);
         }
     }
 }
