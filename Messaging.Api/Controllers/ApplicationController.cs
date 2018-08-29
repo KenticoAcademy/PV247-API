@@ -11,7 +11,8 @@ namespace Messaging.Api.Controllers
     /// <summary>
     /// Application management API
     /// </summary>
-    [Route("api/app/")]
+    [ApiVersion("2.0")]
+    [Route("api/v{version:apiVersion}/app/")]
     public class ApplicationController : Controller
     {
         private readonly IApplicationRepository _applicationRepository;

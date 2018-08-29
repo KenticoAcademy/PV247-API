@@ -41,7 +41,7 @@ namespace Messaging.Api.Tests.Controllers
 
             var fileBytes = Encoding.UTF8.GetBytes("test");
             var fileName = "image.png";
-            var response = await client.PostAsync("/api/file", new MultipartFormDataContent
+            var response = await client.PostAsync("/api/v2/file", new MultipartFormDataContent
             {
                 {new ByteArrayContent(fileBytes), "files", fileName},
                 {new ByteArrayContent(Encoding.UTF8.GetBytes("test2")), "files", "image2.jpg"}
@@ -64,7 +64,7 @@ namespace Messaging.Api.Tests.Controllers
             _fileMetadataRepository.GetFileMetadata(fileId)
                 .Returns(new FileMetadata {Id = fileId});
 
-            var response = await client.GetAsync($"/api/file/{fileId}");
+            var response = await client.GetAsync($"/api/v2/file/{fileId}");
 
             var retrievedMetadata = await response.EnsureSuccessStatusCode()
                 .Content.ReadAsAsync<FileMetadata>();
@@ -82,7 +82,7 @@ namespace Messaging.Api.Tests.Controllers
             _fileBlobRepository.GetDownloadUrl(Arg.Is<FileMetadata>(metadata => metadata.Id == fileId))
                 .Returns(fakeBlobUrl);
 
-            var response = await client.GetAsync($"/api/file/{fileId}/download-link");
+            var response = await client.GetAsync($"/api/v2/file/{fileId}/download-link");
 
             var downloadLink = await response.EnsureSuccessStatusCode()
                 .Content.ReadAsAsync<DownloadLinkResponse>();

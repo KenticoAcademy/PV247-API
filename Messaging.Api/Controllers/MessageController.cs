@@ -12,8 +12,9 @@ namespace Messaging.Api.Controllers
     /// <summary>
     /// Message management API
     /// </summary>
+    [ApiVersion("2.0")]
     [Authorize]
-    [Route("api/app/{appId}/channel/{channelId}/message")]
+    [Route("api/v{version:apiVersion}/app/{appId}/channel/{channelId}/message")]
     public class MessageController : Controller
     {
         private readonly IMessageService _messageService;

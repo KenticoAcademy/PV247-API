@@ -35,7 +35,7 @@ namespace Messaging.Api.Tests.Controllers
             _messageRepository.GetAll(appId, channelId, Arg.Any<int>())
                 .Returns(new[] {new Message(), new Message()});
 
-            var response = await client.GetAsync($"/api/app/{appId}/channel/{channelId}/message");
+            var response = await client.GetAsync($"/api/v2/app/{appId}/channel/{channelId}/message");
 
             var retrievedMessages = await response.EnsureSuccessStatusCode().Content.ReadAsAsync<List<Message>>();
             Assert.Equal(2, retrievedMessages.Count);
@@ -50,13 +50,13 @@ namespace Messaging.Api.Tests.Controllers
             _messageRepository.Upsert(appId, channelId, Arg.Any<Message>())
                 .Returns(call => call.Arg<Message>());
 
-            var response = await client.PostAsync($"/api/app/{appId}/channel/{channelId}/message", new JsonContent(new EditedMessage()));
+            var response = await client.PostAsync($"/api/v2/app/{appId}/channel/{channelId}/message", new JsonContent(new EditedMessage()));
 
             var createdMessage = await response.EnsureSuccessStatusCode()
                 .Content.ReadAsAsync<Message>();
 
             Assert.NotEqual(Guid.Empty, createdMessage.Id);
-            Assert.Equal($"/api/app/{appId}/channel/{channelId}/message", response.Headers.Location.LocalPath);
+            Assert.Equal($"/api/v2/app/{appId}/channel/{channelId}/message", response.Headers.Location.LocalPath);
         }
 
         [Fact]
@@ -73,7 +73,7 @@ namespace Messaging.Api.Tests.Controllers
 
             var newValue = "newMessage";
             var newCustomData = JObject.FromObject(new { json = 42 });
-            var response = await client.PutAsync($"/api/app/{appId}/channel/{channelId}/message/{messageId}", new JsonContent(new EditedMessage
+            var response = await client.PutAsync($"/api/v2/app/{appId}/channel/{channelId}/message/{messageId}", new JsonContent(new EditedMessage
                 {
                     Value = newValue,
                     CustomData = newCustomData
@@ -96,7 +96,7 @@ namespace Messaging.Api.Tests.Controllers
             _messageRepository.Delete(appId, channelId, messageId)
                 .Returns(true);
 
-            var response = await client.DeleteAsync($"/api/app/{appId}/channel/{channelId}/message/{messageId}");
+            var response = await client.DeleteAsync($"/api/v2/app/{appId}/channel/{channelId}/message/{messageId}");
 
             response.EnsureSuccessStatusCode();
         }

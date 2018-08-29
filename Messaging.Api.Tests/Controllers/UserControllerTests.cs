@@ -36,7 +36,7 @@ namespace Messaging.Api.Tests.Controllers
 
             var client = await _factory.CreateAuthenticatedClient(_userRepository);
             
-            var response = await client.GetAsync($"/api/{appId}/user");
+            var response = await client.GetAsync($"/api/v2/{appId}/user");
 
             var users = await response.EnsureSuccessStatusCode()
                 .Content.ReadAsAsync<List<User>>();
@@ -54,7 +54,7 @@ namespace Messaging.Api.Tests.Controllers
             _userRepository.Get(appId, email)
                 .Returns(new User { Email = email });
 
-            var response = await client.GetAsync($"/api/{appId}/user/{email}");
+            var response = await client.GetAsync($"/api/v2/{appId}/user/{email}");
 
             var retrievedUser = await response.EnsureSuccessStatusCode()
                 .Content.ReadAsAsync<User>();
@@ -72,7 +72,7 @@ namespace Messaging.Api.Tests.Controllers
             _userRepository.Upsert(appId, Arg.Any<User>())
                 .Returns(call => call.Arg<User>());
 
-            var response = await client.PostAsync($"/api/{appId}/user", new JsonContent(new RegisteredUser
+            var response = await client.PostAsync($"/api/v2/{appId}/user", new JsonContent(new RegisteredUser
                 {
                     Email = email,
                     CustomData = JObject.FromObject(new { json = true })
@@ -80,7 +80,7 @@ namespace Messaging.Api.Tests.Controllers
 
             response.EnsureSuccessStatusCode();
 
-            Assert.Equal($"/api/{appId}/user/{WebUtility.UrlEncode(email)}", response.Headers.Location.LocalPath);
+            Assert.Equal($"/api/v2/{appId}/user/{WebUtility.UrlEncode(email)}", response.Headers.Location.LocalPath);
 
             var createdUser = await response.EnsureSuccessStatusCode()
                 .Content.ReadAsAsync<User>();
@@ -98,7 +98,7 @@ namespace Messaging.Api.Tests.Controllers
             _userRepository.Get(appId, email)
                 .Returns(new User {Email = email});
 
-            var response = await client.PostAsync($"/api/{appId}/user", new JsonContent(new RegisteredUser { Email = email }));
+            var response = await client.PostAsync($"/api/v2/{appId}/user", new JsonContent(new RegisteredUser { Email = email }));
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
             await _userRepository.DidNotReceiveWithAnyArgs().Upsert(appId, Arg.Any<User>());
@@ -116,7 +116,7 @@ namespace Messaging.Api.Tests.Controllers
             _userRepository.Upsert(appId, Arg.Any<User>())
                 .Returns(call => call.Arg<User>());
 
-            var response = await client.PutAsync($"/api/{appId}/user/{email}", new JsonContent(new UserUpdate
+            var response = await client.PutAsync($"/api/v2/{appId}/user/{email}", new JsonContent(new UserUpdate
             {
                 CustomData = JObject.FromObject(new { json = true })
             }));
@@ -137,7 +137,7 @@ namespace Messaging.Api.Tests.Controllers
             _userRepository.Get(appId, email)
                 .Returns(new User { Email = email });
 
-            var response = await client.PutAsync($"/api/{appId}/user/{email}", new JsonContent(new UserUpdate
+            var response = await client.PutAsync($"/api/v2/{appId}/user/{email}", new JsonContent(new UserUpdate
             {
                 CustomData = JObject.FromObject(new { json = true })
             }));
@@ -155,7 +155,7 @@ namespace Messaging.Api.Tests.Controllers
             var email = "test@test.test";
             var client = await _factory.CreateAuthenticatedClient(_userRepository, email);
 
-            var response = await client.PutAsync($"/api/{appId}/user/{email}", new JsonContent(new UserUpdate
+            var response = await client.PutAsync($"/api/v2/{appId}/user/{email}", new JsonContent(new UserUpdate
             {
                 CustomData = JObject.FromObject(new { json = true })
             }));
