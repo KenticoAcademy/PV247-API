@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Messaging.Api.Controllers
 {
+    /// <summary>
+    /// Channel management API
+    /// </summary>
 	[Authorize]
 	[Route("api/app/{appId}/channel")]
     public class ChannelController : Controller
@@ -23,12 +26,17 @@ namespace Messaging.Api.Controllers
             _applicationRepository = applicationRepository;
         }
 
+        /// <summary>
+        /// Returns specified channel.
+        /// </summary>
+        /// <param name="appId">Application ID</param>
+        /// <param name="channelId">Channel ID</param>
+        /// <response code="200">Returns the retrieved channel.</response>
+        /// <response code="404">Specified application of channel not found.</response>
         [HttpGet("{channelId}")]
+        [ProducesResponseType(typeof(Channel), 200)]
         public async Task<IActionResult> GetChannel(Guid appId, Guid channelId)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var app = await _applicationRepository.Get(appId);
             if (app == null)
                 return NotFound();
@@ -40,7 +48,16 @@ namespace Messaging.Api.Controllers
             return Ok(channel);
         }
 
+        /// <summary>
+        /// Creates a new channel in specified application.
+        /// </summary>
+        /// <param name="appId">Application ID</param>
+        /// <param name="channel">New channel name and custom data</param>
+        /// <response code="201">Returns the created channel.</response>
+        /// <response code="400">Malformed request</response>
+        /// <response code="404">Specified application not found.</response>
         [HttpPost]
+        [ProducesResponseType(typeof(Channel), 201)]
         public async Task<IActionResult> CreateChannel(Guid appId, [FromBody]ChannelUpdate channel)
         {
             if (!ModelState.IsValid)
@@ -63,8 +80,18 @@ namespace Messaging.Api.Controllers
             return CreatedAtAction(nameof(GetChannel), new { appId, channelId = newChannel.Id }, newChannel);
         }
 
+        /// <summary>
+        /// Changes the name and custom data of the specified channel.
+        /// </summary>
+        /// <param name="appId">Application ID</param>
+        /// <param name="channelId">Channel ID</param>
+        /// <param name="channel">New channel name and custom data</param>
+        /// <response code="201">Returns the updated channel.</response>
+        /// <response code="400">Malformed request</response>
+        /// <response code="404">Specified application or channel not found.</response>
         [HttpPut("{channelId}")]
-        public async Task<IActionResult> UpdateChannel(Guid appId, Guid channelId, [FromBody] ChannelUpdate channel)
+        [ProducesResponseType(typeof(Channel), 200)]
+        public async Task<IActionResult> UpdateChannel(Guid appId, Guid channelId, [FromBody]ChannelUpdate channel)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -85,6 +112,13 @@ namespace Messaging.Api.Controllers
             return Ok(channelToUpdate);
         }
 
+        /// <summary>
+        /// Deletes the specified channel.
+        /// </summary>
+        /// <param name="appId">Application ID</param>
+        /// <param name="channelId">Channel ID</param>
+        /// <response code="200">Specified channel has been deleted.</response>
+        /// <response code="404">Specified application or channel not found.</response>
 		[HttpDelete("{channelId}")]
         public async Task<IActionResult> DeleteChannel(Guid appId, Guid channelId)
 		{
