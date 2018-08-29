@@ -1,4 +1,6 @@
-﻿namespace Messaging.Api.Models
+﻿using Newtonsoft.Json.Linq;
+
+namespace Messaging.Api.Models
 {
     /// <summary>
     /// Model of the message update.
@@ -13,6 +15,6 @@
         /// <summary>
         /// Additional data in custom format, presumably JSON.
         /// </summary>
-        public string CustomData { get; set; }
+        public JObject CustomData { get; set; }
     }
 }

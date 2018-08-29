@@ -8,6 +8,7 @@ using Messaging.Contract.Repositories;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
 using NSubstitute;
 using Xunit;
 
@@ -75,7 +76,7 @@ namespace Messaging.Api.Tests.Controllers
         {
             var appId = Guid.NewGuid();
             var channelName = "test";
-            var channelCustomData = "{ json: true }";
+            var channelCustomData = JObject.FromObject(new { json = true });
             var client = await _factory.CreateAuthenticatedClient();
             _applicationRepository.Get(appId).Returns(new Application
             {
@@ -105,7 +106,7 @@ namespace Messaging.Api.Tests.Controllers
             var appId = Guid.NewGuid();
             var channelId = Guid.NewGuid();
             var channelName = "test";
-            var channelCustomData = "{ json: true }";
+            var channelCustomData = JObject.FromObject(new { json = true });
             var client = await _factory.CreateAuthenticatedClient();
             _applicationRepository.Get(appId).Returns(new Application
             {
@@ -130,11 +131,14 @@ namespace Messaging.Api.Tests.Controllers
             Assert.Equal(channelCustomData, updatedChannel.CustomData);
             await _applicationRepository.Received().Upsert(Arg.Is<Application>(app =>
                 app.Channels.Count == 3
-                && app.Channels.Single(channel => channel.Id == channelId).Name == channelName
-                && app.Channels.Single(channel => channel.Id == channelId).CustomData == channelCustomData));
+                && CompareReceivedChannel(app.Channels.Single(channel => channel.Id == channelId), channelName, channelCustomData)));
         }
 
-		[Fact]
+        private static bool CompareReceivedChannel(Channel fromCall, string name, JObject customData) =>
+            fromCall.Name == name
+            && JToken.DeepEquals(fromCall.CustomData, customData);
+
+        [Fact]
         public async Task DeleteChannel_Existing_NoContent()
 		{
 		    var appId = Guid.NewGuid();

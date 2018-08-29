@@ -7,6 +7,7 @@ using Messaging.Contract.Repositories;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
 using NSubstitute;
 using Xunit;
 
@@ -71,7 +72,7 @@ namespace Messaging.Api.Tests.Controllers
                 .Returns(call => call.Arg<Message>());
 
             var newValue = "newMessage";
-            var newCustomData = "{ json: 42 }";
+            var newCustomData = JObject.FromObject(new { json = 42 });
             var response = await client.PutAsync($"/api/app/{appId}/channel/{channelId}/message/{messageId}", new JsonContent(new EditedMessage
                 {
                     Value = newValue,

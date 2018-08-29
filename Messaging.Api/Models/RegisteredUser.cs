@@ -1,4 +1,6 @@
-﻿namespace Messaging.Api.Models
+﻿using Newtonsoft.Json.Linq;
+
+namespace Messaging.Api.Models
 {
     /// <summary>
     /// Model for user registration.
@@ -13,6 +15,6 @@
         /// <summary>
         /// Optional application specific custom data for the user.
         /// </summary>
-        public string CustomData { get; set; }
+        public JObject CustomData { get; set; }
     }
 }

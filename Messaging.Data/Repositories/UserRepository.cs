@@ -6,6 +6,8 @@ using Messaging.Contract.Models;
 using Messaging.Contract.Repositories;
 using Messaging.Data.Models;
 using Microsoft.WindowsAzure.Storage.Table;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Messaging.Data.Repositories
 {
@@ -32,16 +34,12 @@ namespace Messaging.Data.Repositories
         {
             var query = AzureTableHelper.GetRowKeyPrefixQuery<UserMetadataEntity>(appId.ToString(), UserRowKeyPrefix);
 
+            // The actual user doesn't contain anything except for the email we can get from the RowKey.
+            // However, if we needed something from the UserEntity, we had to get them one by one.
             var entities = await AzureTableHelper.GetSegmentedResult(_table, query);
 
             return entities
-                .Select(metadataEntity => new User
-                {
-                    // The actual user doesn't contain anything except for the email we can get from the RowKey.
-                    // However, if we needed something from the UserEntity, we had to get them one by one.
-                    Email = metadataEntity.RowKey.Split(';').Last(),
-                    CustomData = metadataEntity.CustomData
-                })
+                .Select(ToDto)
                 .ToList();
         }
 
@@ -55,11 +53,7 @@ namespace Messaging.Data.Repositories
             if (userMetadata == null)
                 return null;
 
-            return new User
-            {
-                Email = user.RowKey.Split(';').Last(),
-                CustomData = userMetadata.CustomData
-            };
+            return ToDto(userMetadata);
         }
 
         private async Task<UserEntity> GetUser(string email)
@@ -97,16 +91,20 @@ namespace Messaging.Data.Repositories
             {
                 PartitionKey = appId.ToString(),
                 RowKey = userEntity.RowKey,
-                CustomData = user.CustomData
+                CustomData = JsonConvert.SerializeObject(user.CustomData)
             };
             var result = await _table.ExecuteAsync(TableOperation.InsertOrReplace(userMetadataEntity));
             userMetadataEntity = (UserMetadataEntity)result.Result;
 
-            return new User
-            {
-                Email = userEntity.RowKey.Substring(UserRowKeyPrefix.Length),
-                CustomData = userMetadataEntity.CustomData
-            };
+            return ToDto(userMetadataEntity);
         }
+
+        private static User ToDto(UserMetadataEntity metadataEntity) => new User
+        {
+            // The actual user doesn't contain anything except for the email we can get from the RowKey.
+            // However, if we needed something from the UserEntity, we had to get them one by one.
+            Email = metadataEntity.RowKey.Split(';').Last(),
+            CustomData = JsonConvert.DeserializeObject<JObject>(metadataEntity.CustomData)
+        };
     }
 }
