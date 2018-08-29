@@ -11,5 +11,10 @@ namespace Messaging.Api.Models
         /// Application ID
         /// </summary>
         public Guid Id { get; set; }
+
+        /// <summary>
+        /// Application custom metadata
+        /// </summary>
+        public string CustomData { get; set; }
     }
 }
