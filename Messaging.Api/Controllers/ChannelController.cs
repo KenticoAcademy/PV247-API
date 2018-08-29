@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Messaging.Api.Models;
@@ -24,6 +25,23 @@ namespace Messaging.Api.Controllers
         public ChannelController(IApplicationRepository applicationRepository)
         {
             _applicationRepository = applicationRepository;
+        }
+
+        /// <summary>
+        /// Returns channels of specified application.
+        /// </summary>
+        /// <param name="appId">Application ID</param>
+        /// <response code="200">Returns the retrieved channels.</response>
+        /// <response code="404">Specified application not found.</response>
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<Channel>), 200)]
+        public async Task<IActionResult> GetChannels(Guid appId)
+        {
+            var app = await _applicationRepository.Get(appId);
+            if (app == null)
+                return NotFound();
+
+            return Ok(app.Channels.OrderBy(channel => channel.Name));
         }
 
         /// <summary>
