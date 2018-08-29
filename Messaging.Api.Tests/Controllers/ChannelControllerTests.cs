@@ -27,6 +27,28 @@ namespace Messaging.Api.Tests.Controllers
         }
 
         [Fact]
+        public async Task GetChannels_Existing_Ok()
+        {
+            var appId = Guid.NewGuid();
+            var client = await _factory.CreateAuthenticatedClient();
+            _applicationRepository.Get(appId).Returns(new Application
+            {
+                Id = appId,
+                Channels = new List<Channel>
+                {
+                    new Channel { Id = Guid.NewGuid(), Name = "B" },
+                    new Channel { Id = Guid.NewGuid(), Name = "A" }
+                }
+            });
+
+            var response = await client.GetAsync($"/api/app/{appId}/channel");
+
+            var retrievedChannels = await response.EnsureSuccessStatusCode()
+                .Content.ReadAsAsync<List<Channel>>();
+            Assert.Equal(new[] { "A", "B" }, retrievedChannels.Select(channel => channel.Name));
+        }
+
+        [Fact]
         public async Task GetChannel_Existing_Ok()
         {
             var appId = Guid.NewGuid();
