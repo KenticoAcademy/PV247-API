@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
+using Messaging.Api.Models;
 using Messaging.Contract.Models;
 using Messaging.Contract.Repositories;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -38,7 +37,7 @@ namespace Messaging.Api.Tests.Controllers
             var response = await client.GetAsync($"/api/app/{appId}");
 
             var retrievedApp = await response.EnsureSuccessStatusCode()
-                .Content.ReadAsAsync<Application>();
+                .Content.ReadAsAsync<ApplicationResponse>();
             Assert.Equal(appId, retrievedApp.Id);
         }
 
@@ -64,31 +63,8 @@ namespace Messaging.Api.Tests.Controllers
             var response = await client.PostAsync("/api/app", null);
 
             var createdApp = await response.EnsureSuccessStatusCode()
-                .Content.ReadAsAsync<Application>();
+                .Content.ReadAsAsync<ApplicationResponse>();
             Assert.NotEqual(Guid.Empty, createdApp.Id);
-        }
-
-        [Fact]
-        public async Task Patch_ExistingApp_Ok()
-        {
-            var appId = Guid.NewGuid();
-            var client = await _factory.CreateAuthenticatedClient();
-            _applicationRepositoryMock.Get(appId)
-                .Returns(new Application {Id = appId, Channels = new List<Channel>{ new Channel() }});
-            _applicationRepositoryMock.Upsert(Arg.Any<Application>())
-                .Returns(call => call.Arg<Application>());
-            
-            var response = await client.SendAsync(new HttpRequestMessage(new HttpMethod("PATCH"), $"/api/app/{appId}")
-            {
-                Content = new JsonContent(new[]
-                {
-                    new {op = "add", path = "/channels/-", value = new Channel()}
-                })
-            });
-
-            var patchedApp = await response.EnsureSuccessStatusCode()
-                .Content.ReadAsAsync<Application>();
-            Assert.Equal(2, patchedApp.Channels.Count);
         }
     }
 }
