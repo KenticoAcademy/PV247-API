@@ -101,8 +101,6 @@ namespace Messaging.Data.Repositories
 
         private static User ToDto(UserMetadataEntity metadataEntity) => new User
         {
-            // The actual user doesn't contain anything except for the email we can get from the RowKey.
-            // However, if we needed something from the UserEntity, we had to get them one by one.
             Email = metadataEntity.RowKey.Split(';').Last(),
             CustomData = JsonConvert.DeserializeObject<JObject>(metadataEntity.CustomData)
         };

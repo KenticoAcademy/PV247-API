@@ -16,7 +16,5 @@ namespace Messaging.Contract.Models
         /// In bytes
         /// </summary>
         public long FileSize { get; set; }
-
-        // TODO: Mimetype?
     }
 }
