@@ -47,7 +47,7 @@ namespace Messaging.Data.Services
 
         public async Task<bool> Delete(string currentUser, Guid appId, Guid channelId, Guid messageId)
         {
-            // TODO: Check the author is deleting his own message
+            // TODO: Check the author is deleting his own message?
 
             return await _messageRepository.Delete(appId, channelId, messageId);
         }
